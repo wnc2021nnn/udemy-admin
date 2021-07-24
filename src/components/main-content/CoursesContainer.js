@@ -114,7 +114,7 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  { id: "id", numeric: false, disablePadding: true, label: "ID", },
+  { id: "id", numeric: false, disablePadding: true, label: "ID" },
   { id: "title", numeric: false, disablePadding: false, label: "Course Name" },
   { id: "desc", numeric: false, disablePadding: false, label: "Description" },
   { id: "topic", numeric: false, disablePadding: false, label: "Topic" },
@@ -127,12 +127,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const {
-    classes,
-    order,
-    orderBy,
-    onRequestSort,
-  } = props;
+  const { classes, order, orderBy, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -295,24 +290,12 @@ export default function EnhancedTable(props) {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
+  const handleClick = (event, id) => {
+    if (selected[0] === id) {
+      setSelected([]);
+    } else {
+      setSelected([id]);
     }
-
-    setSelected(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
