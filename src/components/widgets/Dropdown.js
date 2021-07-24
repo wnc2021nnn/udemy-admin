@@ -8,15 +8,6 @@ import Paper from "@material-ui/core/Paper";
 import Popper from "@material-ui/core/Popper";
 
 export function CustomDropDown(props) {
-    const classes = makeStyles((theme) => ({
-      root: {
-        display: "flex",
-      },
-      paper: {
-        marginRight: theme.spacing(2),
-      },
-      backgroundColor: AppTheme.primary,
-    }));
     const [open, setOpen] = useState(false);
     const anchorRef = useRef(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -49,7 +40,6 @@ export function CustomDropDown(props) {
     }, [open]);
   
     return (
-      <div className={classes.root}>
         <div>
           <Button
             ref={anchorRef}
@@ -96,7 +86,6 @@ export function CustomDropDown(props) {
             )}
           </Popper>
         </div>
-      </div>
     );
   }
   
