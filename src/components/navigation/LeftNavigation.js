@@ -13,7 +13,6 @@ export function LeftNavigation(props) {
 
   return (
     <Grid container direction="column" justifyContent="flex-start">
-      <Box padding={3}></Box>
       {navButtons}
     </Grid>
   );

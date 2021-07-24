@@ -1,6 +1,6 @@
-import { Box, Grid } from "@material-ui/core";
+import { Box, Grid, Container } from "@material-ui/core";
 import { LeftNavigation } from "../navigation/LeftNavigation";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { CategoriesContainer } from "../main-content/CategoriesContainer";
 import { CoursesContainer } from "../main-content/CoursesContainer";
 import { LecturersContainer } from "../main-content/LecturersContainer";
@@ -23,7 +23,11 @@ export function AdminLayout(props) {
           <LeftNavigation currentTabIndex={tabIndex} onClickTab={setTabIndex} />
         </Grid>
         <Grid item xs={10}>
-          {tabViews[tabIndex]}
+          <Fragment>
+            <Box mx={3}>
+              <Container>{tabViews[tabIndex]}</Container>
+            </Box>
+          </Fragment>
         </Grid>
       </Grid>
     </Box>
