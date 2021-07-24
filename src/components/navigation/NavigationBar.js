@@ -2,7 +2,6 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import classes from "./NavigationBar.module.css";
 import logoIcon from "../../assets/icons/Logo.svg";
-import { useSelector } from "react-redux";
 import { Avatar, Box } from "@material-ui/core";
 
 export function NavigationBar(props) {

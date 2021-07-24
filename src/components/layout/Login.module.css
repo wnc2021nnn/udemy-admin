@@ -1,0 +1,56 @@
+.wrapper {
+  width: 20vw;
+  margin: 60px auto;
+  height: 40vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 2rem;
+  background: linear-gradient(
+    90deg,
+    rgba(21, 19, 64, 1) 0%,
+    rgba(133, 133, 232, 1) 0%,
+    rgba(0, 212, 255, 1) 100%,
+    rgba(2, 0, 36, 1) 100%
+  );
+  border-radius: 1rem;
+   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  
+}
+
+.wrapper form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 100%;
+  align-items: center;
+  width: 100%;
+}
+
+.wrapper input {
+  padding: 10px 20px;
+  border-radius: 1rem;
+  border: none;
+}
+
+
+
+.wrapper button {
+  width: 30%;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+}
+
+.wrapper a{
+    font-size: 19px;
+    text-decoration: none;
+}
+
+.wrapper a:hover{
+    color: hotpink;
+    cursor: pointer;
+}
+
+.errorText {
+  color: red;
+  height: 30px;
+}

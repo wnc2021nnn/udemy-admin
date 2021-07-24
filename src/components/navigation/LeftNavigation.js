@@ -1,4 +1,4 @@
-import { Button, Box, Grid } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
 
 export function LeftNavigation(props) {
   const tabs = ["Categories", "Courses", "Students", "Lecturers"];
