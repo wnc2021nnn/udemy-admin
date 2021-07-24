@@ -1,57 +1,46 @@
-import { Box, Grid } from "@material-ui/core";
-import { Fragment, useState } from "react";
+import { Box, Grid, Button } from "@material-ui/core";
+import { Fragment, useEffect, useState } from "react";
 import AppTheme from "../../constants/theme";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategoriesList } from "../../store/slices/categoriesSlice";
+import { Add, Delete, Edit } from "@material-ui/icons";
 
 export function CategoriesContainer(props) {
-  const categories = [
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-  ];
-  const topics = [
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-    "IT Operation",
-  ];
+  const dispatch = useDispatch();
+  const categories = useSelector(
+    (state) => state.categories.listCategory.entities
+  );
 
   const [categorySelectedIndex, setCategorySelected] = useState(0);
-  const [topicSelectedIndex, setTopicSelected] = useState(0);
+  const [topicSelectedIndex, setTopicSelected] = useState(-1);
 
-  const cateItems = categories.map((value, index) => (
+  useEffect(() => {
+    dispatch(fetchCategoriesList());
+  }, [dispatch]);
+
+  console.log(categories);
+  const cateItems = categories.map((category, index) => (
     <CateItem
-      value={value}
+      id={category.category_id}
+      value={category.title}
       isSelected={categorySelectedIndex === index ? true : false}
-      onClick={() => setCategorySelected(index)}
+      onClick={() => {
+        setCategorySelected(index);
+        setTopicSelected(-1);
+      }}
     />
   ));
-  const topicItems = topics.map((value, index) => (
-    <CateItem
-      value={value}
-      isSelected={topicSelectedIndex === index ? true : false}
-      onClick={() => setTopicSelected(index)}
-    />
-  ));
+
+  const topicItems = categories[categorySelectedIndex]?.topics.map(
+    (topic, index) => (
+      <CateItem
+        id={topic.topic_id}
+        value={topic.title}
+        isSelected={topicSelectedIndex === index ? true : false}
+        onClick={() => setTopicSelected(index)}
+      />
+    )
+  );
 
   return (
     <Fragment>
@@ -69,27 +58,48 @@ export function CategoriesContainer(props) {
 
 function CateTable(props) {
   return (
-    <Box
-      border={0.5}
-      mx={3}
-      borderColor="grey.500"
-      height="700px"
-      maxWidth="true"
-      style={{
-        overflowY: "scroll",
-      }}
-    >
+    <Box>
       <Box
-        p={2}
-        justifyContent="center"
-        display="flex"
-        style={{ backgroundColor: AppTheme.primary }}
+        border={0.5}
+        mx={3}
+        borderColor="grey.500"
+        height="600px"
+        maxWidth="true"
+        style={{
+          overflowY: "scroll",
+        }}
       >
-        <text style={{ color: AppTheme.secondary, fontWeight: "bold" }}>
-          {props.title ?? "TITLE"}
-        </text>
+        <Box
+          p={2}
+          justifyContent="center"
+          display="flex"
+          style={{ backgroundColor: AppTheme.primary }}
+        >
+          <text style={{ color: AppTheme.secondary, fontWeight: "bold" }}>
+            {props.title ?? "TITLE"}
+          </text>
+        </Box>
+        {props.children}
       </Box>
-      {props.children}
+      <Box
+        border={0.5}
+        borderTop={0}
+        mx={3}
+        borderColor="grey.500"
+        maxWidth="true"
+        display="flex"
+        justifyContent="flex-end"
+      >
+        <Button>
+          <Add style={{ color: AppTheme.primary }}></Add>
+        </Button>
+        <Button>
+          <Edit style={{ color: AppTheme.primary }}></Edit>
+        </Button>
+        <Button>
+          <Delete style={{ color: AppTheme.red }}></Delete>
+        </Button>
+      </Box>
     </Box>
   );
 }
@@ -100,14 +110,25 @@ function CateItem(props) {
     ? AppTheme.primary
     : AppTheme.secondary;
   return (
-    <Box
-      p={2}
-      justifyContent="center"
-      display="flex"
-      style={{ backgroundColor: backgroundColor }}
-      onClick={props.onClick}
-    >
-      <text style={{ color: textColor }}>{props.value}</text>
+    <Box display="flex" maxWidth="true">
+      <Box
+        p={2}
+        display="flex"
+        flexGrow={1}
+        style={{ backgroundColor: backgroundColor }}
+        onClick={props.onClick}
+      >
+        <text style={{ color: textColor }}>{props.id ?? "ID"}</text>
+      </Box>
+      <Box
+        p={2}
+        display="flex"
+        flexGrow={1}
+        style={{ backgroundColor: backgroundColor }}
+        onClick={props.onClick}
+      >
+        <text style={{ color: textColor }}>{props.value ?? "Title"}</text>
+      </Box>
     </Box>
   );
 }
