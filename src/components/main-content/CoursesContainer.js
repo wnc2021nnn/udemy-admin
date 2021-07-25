@@ -12,20 +12,17 @@ import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import { fetchCourses } from "../../store/slices/coursesSlice";
 import React from "react";
-import PropTypes from "prop-types";
 import clsx from "clsx";
-import { lighten } from "@material-ui/core/styles";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import DeleteIcon from "@material-ui/icons/Delete";
-import FilterListIcon from "@material-ui/icons/FilterList";
 import { CustomDropDown } from "../widgets/Dropdown";
+import AppTheme from "../../constants/theme";
 
 export function CoursesContainer(props) {
   const dispatch = useDispatch();
@@ -51,6 +48,7 @@ export function CoursesContainer(props) {
             setCategorySelected(index);
             setTopicSelected(0);
           }}
+          selectedIndex={categorySelectedIndex}
         />
         <Box width="16px" />
         <CustomDropDown
@@ -60,6 +58,7 @@ export function CoursesContainer(props) {
             ),
           ]}
           clickItemCallback={(index) => setTopicSelected(index)}
+          selectedIndex={topicSelectedIndex}
         />
       </Box>
       <Box height="32px" />
@@ -161,31 +160,15 @@ function EnhancedTableHead(props) {
   );
 }
 
-EnhancedTableHead.propTypes = {
-  classes: PropTypes.object.isRequired,
-  numSelected: PropTypes.number.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(["asc", "desc"]).isRequired,
-  orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired,
-};
-
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(1),
   },
-  highlight:
-    theme.palette.type === "light"
-      ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
+  highlight: {
+    color: AppTheme.primaryLight,
+    backgroundColor: AppTheme.primaryLight,
+  },
   title: {
     flex: "1 1 100%",
   },
@@ -194,57 +177,43 @@ const useToolbarStyles = makeStyles((theme) => ({
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
   const { numSelected } = props;
-
+  const toolBar = (
+    <Toolbar>
+      <Tooltip title="Delete">
+        <IconButton aria-label="delete">
+          <DeleteIcon />
+        </IconButton>
+      </Tooltip>
+    </Toolbar>
+  );
+  
   return (
-    <Toolbar
+    <Box
       className={clsx(classes.root, {
         [classes.highlight]: numSelected > 0,
       })}
+      display="flex"
     >
-      {numSelected > 0 ? (
-        <Typography
-          className={classes.title}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
-        >
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <Typography
-          className={classes.title}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Courses
-        </Typography>
-      )}
-
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton aria-label="delete">
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Toolbar>
+      <Typography
+        className={classes.title}
+        variant="h6"
+        id="tableTitle"
+        component="div"
+        style={{padding:"16px"}}
+      >
+        Courses
+      </Typography>
+      {numSelected > 0 ? toolBar : null}
+    </Box>
   );
-};
-
-EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired,
 };
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
+  },
+  container: {
+    maxHeight: 480,
   },
   paper: {
     width: "100%",
@@ -253,20 +222,9 @@ const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 750,
   },
-  visuallyHidden: {
-    border: 0,
-    clip: "rect(0 0 0 0)",
-    height: 1,
-    margin: -1,
-    overflow: "hidden",
-    padding: 0,
-    position: "absolute",
-    top: 20,
-    width: 1,
-  },
 }));
 
-export default function EnhancedTable(props) {
+function EnhancedTable(props) {
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -279,15 +237,6 @@ export default function EnhancedTable(props) {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = props.rows.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
   };
 
   const handleClick = (event, id) => {
@@ -320,19 +269,13 @@ export default function EnhancedTable(props) {
     <div className={classes.root}>
       <Paper className={classes.paper}>
         <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer>
-          <Table
-            className={classes.table}
-            aria-labelledby="tableTitle"
-            size={dense ? "small" : "medium"}
-            aria-label="enhanced table"
-          >
+        <TableContainer className={classes.container}>
+          <Table className={classes.table} size={dense ? "small" : "medium"}>
             <EnhancedTableHead
               classes={classes}
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={props.rows.length}
             />
@@ -348,10 +291,10 @@ export default function EnhancedTable(props) {
                       hover
                       onClick={(event) => handleClick(event, row.id)}
                       role="checkbox"
-                      aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.name}
                       selected={isItemSelected}
+                      className={classes}
                     >
                       <TableCell
                         component="th"

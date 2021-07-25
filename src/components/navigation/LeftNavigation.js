@@ -1,12 +1,14 @@
 import { Button, Grid } from "@material-ui/core";
+import AppTheme from "../../constants/theme";
 
 export function LeftNavigation(props) {
-  const tabs = ["Categories", "Courses", "Students", "Lecturers"];
+  const tabs = ["Categories", "Courses", "Lecturers", "Student"];
 
   const navButtons = tabs.map((tab, index) => (
     <NavButton
       text={tab}
-      color={props.currentTabIndex === index ? "primary" : "default"}
+      color={props.currentTabIndex === index ? AppTheme.primary : null}
+      textColor = {props.currentTabIndex === index ? AppTheme.secondary : AppTheme.black}
       onClick={() => props.onClickTab(index)}
     />
   ));
@@ -23,12 +25,13 @@ function NavButton(props) {
     <Button
       href={props.href}
       fullWidth="true"
-      style={{ height: "48px" }}
+      style={{ height: "48px", backgroundColor: props.color }}
       onClick={props.onClick}
       variant="contained"
-      color={props.color}
     >
+      <text style={{color: props.textColor}}>
       {props.text}
+      </text>
     </Button>
   );
 }

@@ -105,9 +105,9 @@ function CateTable(props) {
 }
 
 function CateItem(props) {
-  const textColor = props.isSelected ? AppTheme.secondary : AppTheme.black;
+  const textColor = AppTheme.black;
   const backgroundColor = props.isSelected
-    ? AppTheme.primary
+    ? AppTheme.primaryLight
     : AppTheme.secondary;
   return (
     <Box display="flex" maxWidth="true">

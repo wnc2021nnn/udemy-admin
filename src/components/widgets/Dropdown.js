@@ -10,7 +10,6 @@ import Popper from "@material-ui/core/Popper";
 export function CustomDropDown(props) {
     const [open, setOpen] = useState(false);
     const anchorRef = useRef(null);
-    const [selectedIndex, setSelectedIndex] = useState(0);
   
     const handleToggle = () => {
       setOpen((prevOpen) => !prevOpen);
@@ -24,7 +23,6 @@ export function CustomDropDown(props) {
     };
   
     const clickItemHandler = (event, index) => {
-      setSelectedIndex(index);
       props.clickItemCallback(index);
       handleClose(event);
     };
@@ -50,7 +48,7 @@ export function CustomDropDown(props) {
             onClick={handleToggle}
           >
             <text style={{ color: AppTheme.secondary }}>
-              {props.options[selectedIndex]}
+              {props.options[props.selectedIndex ?? 0]}
             </text>
           </Button>
           <Popper
