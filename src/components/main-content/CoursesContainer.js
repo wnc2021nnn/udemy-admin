@@ -37,7 +37,7 @@ export function CoursesContainer(props) {
 
   useEffect(() => {
     dispatch(fetchCourses());
-  }, []);
+  }, [dispatch]);
 
   return (
     <Box>
