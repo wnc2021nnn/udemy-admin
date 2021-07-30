@@ -1,8 +1,17 @@
 const APIPath = {
   GET_ALL_CATEGORIES: "/categories",
+  CREATE_CATEGORY: "/categories",
+  DELETE_CATEGORY: "/categories",
+  EDIT_CATEGORY: "/categories",
+
+  GET_TOPICS: "/topics",
+  CREATE_TOPIC: "/topics",
+  DELETE_TOPIC: "/topics",
+  EDIT_TOPIC: "/topics",
+
   GET_ALL_COURSES: "/courses",
   GET_COURSES_CONTENT: "courses-content",
-  GET_TOPICS: "/topics",
+  
   USERS: "/users",
   LOGIN: "/auth",
   GET_COURSE_REVIEWS: "/course-reviews",

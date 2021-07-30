@@ -4,6 +4,7 @@ import AppTheme from "../../constants/theme";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategoriesList } from "../../store/slices/categoriesSlice";
 import { Add, Delete, Edit } from "@material-ui/icons";
+import AddCategoryDialogButton from "../widgets/dialogs/AddCategoryDialog";
 
 export function CategoriesContainer(props) {
   const dispatch = useDispatch();
@@ -90,9 +91,7 @@ function CateTable(props) {
         display="flex"
         justifyContent="flex-end"
       >
-        <Button>
-          <Add style={{ color: AppTheme.primary }}></Add>
-        </Button>
+        <AddCategoryDialogButton />
         <Button>
           <Edit style={{ color: AppTheme.primary }}></Edit>
         </Button>
