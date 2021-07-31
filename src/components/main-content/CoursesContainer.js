@@ -10,7 +10,10 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
-import { fetchCourses } from "../../store/slices/coursesSlice";
+import {
+  enableCourseThunk,
+  fetchCourses,
+} from "../../store/slices/coursesSlice";
 import React from "react";
 import clsx from "clsx";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
@@ -23,6 +26,7 @@ import Switch from "@material-ui/core/Switch";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { CustomDropDown } from "../widgets/Dropdown";
 import AppTheme from "../../constants/theme";
+import { disableCourseThunk } from "../../store/slices/coursesSlice";
 
 export function CoursesContainer(props) {
   const dispatch = useDispatch();
@@ -33,17 +37,24 @@ export function CoursesContainer(props) {
 
   const [categorySelectedIndex, setCategorySelected] = useState(0);
   const [topicSelectedIndex, setTopicSelected] = useState(0);
-  const [courseSelectedId, setCourseSelected] = useState("");
 
   useEffect(() => {
     dispatch(fetchCourses());
   }, [dispatch]);
 
+  const enableCourseHandler = (id) => {
+    dispatch(enableCourseThunk(id));
+  };
+
+  const disableCourseHandler = (id) => {
+    dispatch(disableCourseThunk(id));
+  };
+
   return (
     <Box>
       <Box display="flex">
         <CustomDropDown
-          options={[...categories.map((category, index) => category.title)]}
+          options={[...categories?.map((category, index) => category.title)]}
           clickItemCallback={(index) => {
             setCategorySelected(index);
             setTopicSelected(0);
@@ -63,26 +74,24 @@ export function CoursesContainer(props) {
       </Box>
       <Box height="32px" />
       <EnhancedTable
-        rows={courses.map((course, index) =>
+        rows={courses?.map((course, index) =>
           createData(
             course.course_id,
             course.title,
             course.description,
             course.topic_id,
-            course.lecturers_id
+            course.lecturers_id,
+            course.state === "DISABLED"
           )
         )}
-        onRowSelected={(id) => {
-          setCourseSelected(id);
-        }}
-        courseSelectedId={courseSelectedId}
+        disableCourseHandler={disableCourseHandler}
       />
     </Box>
   );
 }
 
-function createData(id, title, desc, topic, lecturers) {
-  return { id, title, desc, topic, lecturers };
+function createData(id, title, desc, topic, lecturers, isDisable) {
+  return { id, title, desc, topic, lecturers, isDisable };
 }
 
 function descendingComparator(a, b, orderBy) {
@@ -174,18 +183,19 @@ const useToolbarStyles = makeStyles((theme) => ({
 }));
 
 const EnhancedTableToolbar = (props) => {
+  const { onDisable, onEnable } = props;
   const classes = useToolbarStyles();
   const { numSelected } = props;
   const toolBar = (
     <Toolbar>
       <Tooltip title="Delete">
-        <IconButton aria-label="delete">
+        <IconButton aria-label="delete" onClick={onDisable}>
           <DeleteIcon />
         </IconButton>
       </Tooltip>
     </Toolbar>
   );
-  
+
   return (
     <Box
       className={clsx(classes.root, {
@@ -198,7 +208,7 @@ const EnhancedTableToolbar = (props) => {
         variant="h6"
         id="tableTitle"
         component="div"
-        style={{padding:"16px"}}
+        style={{ padding: "16px" }}
       >
         Courses
       </Typography>
@@ -224,10 +234,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function EnhancedTable(props) {
+  const { enableCourseHandler, disableCourseHandler } = props;
+
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
-  const [selected, setSelected] = React.useState([]);
+  const [selectedId, setSelected] = React.useState("");
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -239,10 +251,10 @@ function EnhancedTable(props) {
   };
 
   const handleClick = (event, id) => {
-    if (selected[0] === id) {
-      setSelected([]);
+    if (selectedId === id) {
+      setSelected("");
     } else {
-      setSelected([id]);
+      setSelected(id);
     }
   };
 
@@ -259,7 +271,7 @@ function EnhancedTable(props) {
     setDense(event.target.checked);
   };
 
-  const isSelected = (name) => selected.indexOf(name) !== -1;
+  const isSelected = (id) => selectedId === id;
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, props.rows.length - page * rowsPerPage);
@@ -267,12 +279,14 @@ function EnhancedTable(props) {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selectedId.length}
+          onDisable={() => disableCourseHandler(selectedId)}
+        />
         <TableContainer className={classes.container}>
           <Table className={classes.table} size={dense ? "small" : "medium"}>
             <EnhancedTableHead
               classes={classes}
-              numSelected={selected.length}
               order={order}
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
@@ -302,12 +316,30 @@ function EnhancedTable(props) {
                         padding="none"
                         align="right"
                       >
-                        {row.id}
+                        <CustomText isDisable={row.isDisable}>
+                          {row.id}
+                        </CustomText>
                       </TableCell>
-                      <TableCell align="left">{row.title}</TableCell>
-                      <TableCell align="left">{row.desc}</TableCell>
-                      <TableCell align="left">{row.topic}</TableCell>
-                      <TableCell align="left">{row.lecturers}</TableCell>
+                      <TableCell align="left">
+                        <CustomText isDisable={row.isDisable}>
+                          {row.title}
+                        </CustomText>
+                      </TableCell>
+                      <TableCell align="left">
+                        <CustomText isDisable={row.isDisable}>
+                          {row.desc}
+                        </CustomText>
+                      </TableCell>
+                      <TableCell align="left">
+                        <CustomText isDisable={row.isDisable}>
+                          {row.topic}
+                        </CustomText>
+                      </TableCell>
+                      <TableCell align="left">
+                        <CustomText isDisable={row.isDisable}>
+                          {row.lecturers}
+                        </CustomText>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -336,3 +368,10 @@ function EnhancedTable(props) {
     </div>
   );
 }
+
+const CustomText = (props) => {
+  const { children, isDisable } = props;
+  return (
+    <text style={{ color: isDisable ? "grey" : "black" }}>{children}</text>
+  );
+};
