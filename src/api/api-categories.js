@@ -14,17 +14,17 @@ export const getAllCategories = async () => {
 export const addCategory = async (category) => {
   const axiosInstance = AxiosInstance();
   const body = {
-    catagories: [category],
+    categories: [{ title: category }],
   };
   return await axiosInstance.put(APIPath.CREATE_CATEGORY, body);
 };
 
-export const deleteCategory = async (id) => {
+export const deleteCategory = async (categoryId) => {
   const axiosInstance = AxiosInstance();
   const body = {
-    category_ids: [id],
+    category_ids: [categoryId],
   };
-  return await axiosInstance.delete(APIPath.DELETE_CATEGORY, body);
+  return await axiosInstance.delete(APIPath.DELETE_CATEGORY, { data: body });
 };
 
 /**

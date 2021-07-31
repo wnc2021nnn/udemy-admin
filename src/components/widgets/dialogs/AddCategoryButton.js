@@ -8,8 +8,9 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { Add } from "@material-ui/icons";
 import AppTheme from "../../../constants/theme";
 import { useDispatch } from "react-redux";
+import { addNewCategoryThunk } from "../../../store/slices/categoriesSlice";
 
-export default function AddCategoryDialogButton(props) {
+export default function AddCategoryButton(props) {
   const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch();
   let newCategoryTitle = "";
@@ -23,8 +24,7 @@ export default function AddCategoryDialogButton(props) {
   };
 
   const onAddNewHandler = () => {
-    // TODO: dispatch action
-    console.log(newCategoryTitle);
+    dispatch(addNewCategoryThunk(newCategoryTitle))
     handleClose();
   };
 

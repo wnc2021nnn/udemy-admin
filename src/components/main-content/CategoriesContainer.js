@@ -2,9 +2,13 @@ import { Box, Grid, Button } from "@material-ui/core";
 import { Fragment, useEffect, useState } from "react";
 import AppTheme from "../../constants/theme";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategoriesList } from "../../store/slices/categoriesSlice";
-import { Add, Delete, Edit } from "@material-ui/icons";
-import AddCategoryDialogButton from "../widgets/dialogs/AddCategoryDialog";
+import {
+  deleteCategoryThunk,
+  fetchCategoriesList,
+} from "../../store/slices/categoriesSlice";
+import { Delete, Edit } from "@material-ui/icons";
+import AddCategoryButton from "../widgets/dialogs/AddCategoryButton";
+import ConfirmButton from "../widgets/buttons/ConfirmButton";
 
 export function CategoriesContainer(props) {
   const dispatch = useDispatch();
@@ -19,7 +23,6 @@ export function CategoriesContainer(props) {
     dispatch(fetchCategoriesList());
   }, [dispatch]);
 
-  console.log(categories);
   const cateItems = categories.map((category, index) => (
     <CateItem
       id={category.category_id}
@@ -32,7 +35,13 @@ export function CategoriesContainer(props) {
     />
   ));
 
-  const topicItems = categories[categorySelectedIndex]?.topics.map(
+  const deleteHandler = () => {
+    dispatch(
+      deleteCategoryThunk(categories[categorySelectedIndex].category_id)
+    );
+  };
+
+  const topicItems = categories[categorySelectedIndex]?.topics?.map(
     (topic, index) => (
       <CateItem
         id={topic.topic_id}
@@ -47,7 +56,9 @@ export function CategoriesContainer(props) {
     <Fragment>
       <Grid container maxWidth="lg">
         <Grid item xs={6}>
-          <CateTable title="Categories">{cateItems}</CateTable>
+          <CateTable title="Categories" deleteHandler={deleteHandler}>
+            {cateItems}
+          </CateTable>
         </Grid>
         <Grid item xs={6}>
           <CateTable title="Topics">{topicItems}</CateTable>
@@ -58,6 +69,7 @@ export function CategoriesContainer(props) {
 }
 
 function CateTable(props) {
+  const { deleteHandler } = props;
   return (
     <Box>
       <Box
@@ -91,13 +103,17 @@ function CateTable(props) {
         display="flex"
         justifyContent="flex-end"
       >
-        <AddCategoryDialogButton />
+        <AddCategoryButton />
         <Button>
           <Edit style={{ color: AppTheme.primary }}></Edit>
         </Button>
-        <Button>
+        <ConfirmButton
+          title={"Delete Category"}
+          description={"Do you wanna delete this category?"}
+          onConfirm={deleteHandler}
+        >
           <Delete style={{ color: AppTheme.red }}></Delete>
-        </Button>
+        </ConfirmButton>
       </Box>
     </Box>
   );
@@ -109,20 +125,12 @@ function CateItem(props) {
     ? AppTheme.primaryLight
     : AppTheme.secondary;
   return (
-    <Box display="flex" maxWidth="true">
+    <Box display="flex" maxWidth="true" key={props.id}>
       <Box
         p={2}
         display="flex"
         flexGrow={1}
-        style={{ backgroundColor: backgroundColor }}
-        onClick={props.onClick}
-      >
-        <text style={{ color: textColor }}>{props.id ?? "ID"}</text>
-      </Box>
-      <Box
-        p={2}
-        display="flex"
-        flexGrow={1}
+        justifyContent="center"
         style={{ backgroundColor: backgroundColor }}
         onClick={props.onClick}
       >
