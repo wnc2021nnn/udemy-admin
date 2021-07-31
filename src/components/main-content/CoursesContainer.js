@@ -74,7 +74,6 @@ export function CoursesContainer(props) {
         )}
         onRowSelected={(id) => {
           setCourseSelected(id);
-          console.log(id);
         }}
         courseSelectedId={courseSelectedId}
       />

@@ -1,6 +1,7 @@
 const APIPath = {
   GET_ALL_CATEGORIES: "/categories",
   CREATE_CATEGORY: "/categories",
+  UPDATE_CATEGORY: "/categories",
   DELETE_CATEGORY: "/categories",
   EDIT_CATEGORY: "/categories",
 

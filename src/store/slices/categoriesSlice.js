@@ -5,6 +5,7 @@ import {
   getTopics,
   addCategory,
   deleteCategory,
+  updateCategory,
 } from "../../api/api-categories";
 
 const FETCH_HOT_TOPICS_PARAMS = {
@@ -62,12 +63,21 @@ export const deleteCategoryThunk = createAsyncThunk(
   }
 );
 
+export const updateCategoryThunk = createAsyncThunk(
+  "categories/updateCategory",
+  async (category) => {
+    const res = await updateCategory(category);
+    return res.data.data;
+  }
+);
+
 const categoriesSlice = createSlice({
   name: "categories",
   initialState: initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Get all category
       .addCase(fetchCategoriesList.pending, (state) => {
         state.listCategory.status.status = Status.LOADING_STATUS;
       })
@@ -80,18 +90,7 @@ const categoriesSlice = createSlice({
         state.listCategory.status.message = action.error.message;
       })
 
-      .addCase(fetchHotTopicList.pending, (state) => {
-        state.listHotTopic.status.status = Status.LOADING_STATUS;
-      })
-      .addCase(fetchHotTopicList.fulfilled, (state, action) => {
-        state.listHotTopic.status.status = Status.SUCCESS_STATUS;
-        state.listHotTopic.entities = action.payload;
-      })
-      .addCase(fetchHotTopicList.rejected, (state, action) => {
-        state.listHotTopic.status.status = Status.FAILED_STATUS;
-        state.listHotTopic.status.message = action.error.message;
-      })
-
+      // Add new category reducers
       .addCase(addNewCategoryThunk.pending, (state, action) => {
         state.listCategory.status.status = Status.LOADING_STATUS;
       })
@@ -107,6 +106,7 @@ const categoriesSlice = createSlice({
         ];
       })
 
+      // Delete category reducers
       .addCase(deleteCategoryThunk.pending, (state, action) => {
         state.listCategory.status.status = Status.LOADING_STATUS;
       })
@@ -117,12 +117,28 @@ const categoriesSlice = createSlice({
       .addCase(deleteCategoryThunk.fulfilled, (state, action) => {
         state.listCategory.status.status = Status.SUCCESS_STATUS;
         const deleteId = action.payload[0];
-        console.log(deleteId);
         state.listCategory.entities = state.listCategory.entities.filter(
           (value, index) => {
             return value.category_id !== deleteId;
           }
         );
+      })
+
+      // Update category reducer
+      .addCase(updateCategoryThunk.pending, (state, action) => {
+        state.listCategory.status.status = Status.LOADING_STATUS;
+      })
+      .addCase(updateCategoryThunk.rejected, (state, action) => {
+        state.listCategory.status.status = Status.FAILED_STATUS;
+        state.listCategory.status.message = action.error.message;
+      })
+      .addCase(updateCategoryThunk.fulfilled, (state, action) => {
+        state.listCategory.status.status = Status.SUCCESS_STATUS;
+        const updatedCategory = action.payload[0];
+        const updatedIndex = state.listCategory.entities.findIndex(
+          (value) => value.category_id === updatedCategory.category_id
+        );
+        state.listCategory.entities[updatedIndex] = updatedCategory;
       });
   },
 });

@@ -27,6 +27,14 @@ export const deleteCategory = async (categoryId) => {
   return await axiosInstance.delete(APIPath.DELETE_CATEGORY, { data: body });
 };
 
+export const updateCategory = async (category) => {
+  const axiosInstance = AxiosInstance();
+  const body = {
+    categories: [category],
+  };
+  return await axiosInstance.patch(APIPath.UPDATE_CATEGORY, body);
+};
+
 /**
  * Get topics
  * @param {Object} params
