@@ -5,15 +5,19 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { Add } from "@material-ui/icons";
+import { Add, Edit } from "@material-ui/icons";
 import AppTheme from "../../../constants/theme";
 import { useDispatch } from "react-redux";
-import { addNewCategoryThunk } from "../../../store/slices/categoriesSlice";
+import {
+  addNewTopicThunk,
+  updateTopicThunk,
+} from "../../../store/slices/categoriesSlice";
 
-export default function AddCategoryButton(props) {
+export default function AddTopicButton(props) {
+  const { categoryId, topicId, isUpdate, topicTitle } = props;
   const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch();
-  let newCategoryTitle = "";
+  let newTopicTitle = topicTitle ?? "";
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -24,22 +28,36 @@ export default function AddCategoryButton(props) {
   };
 
   const onAddNewHandler = () => {
-    dispatch(addNewCategoryThunk(newCategoryTitle))
+    if (isUpdate) {
+      const updateTopic = {
+        topic_id: topicId,
+        category_id: categoryId,
+        title: newTopicTitle,
+      };
+      console.log(updateTopic);
+      dispatch(updateTopicThunk(updateTopic));
+    } else {
+      const newTopic = {
+        category_id: categoryId,
+        title: newTopicTitle,
+      };
+      dispatch(addNewTopicThunk(newTopic));
+    }
     handleClose();
   };
 
   return (
     <div>
       <Button color="primary" onClick={handleClickOpen}>
-        <Add style={{ color: AppTheme.primary }}></Add>
+        {isUpdate ? (
+          <Edit style={{ color: AppTheme.primary }}></Edit>
+        ) : (
+          <Add style={{ color: AppTheme.primary }}></Add>
+        )}
       </Button>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
-      >
+      <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="form-dialog-title">
-          <text>Add New Category</text>
+          <text>{isUpdate ? "Update Topic" : "Add New Topic"}</text>
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -47,8 +65,9 @@ export default function AddCategoryButton(props) {
             label={props.label ?? "label"}
             type="text"
             fullWidth
+            defaultValue={topicTitle ?? ""}
             variant="outlined"
-            onChange={(e) => (newCategoryTitle = e.target.value)}
+            onChange={(e) => (newTopicTitle = e.target.value)}
           />
         </DialogContent>
         <DialogActions>
@@ -56,7 +75,7 @@ export default function AddCategoryButton(props) {
             Cancel
           </Button>
           <Button onClick={onAddNewHandler} color="primary">
-            Add
+            {isUpdate ? "Update" : "Add"}
           </Button>
         </DialogActions>
       </Dialog>

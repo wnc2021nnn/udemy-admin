@@ -6,6 +6,9 @@ import {
   addCategory,
   deleteCategory,
   updateCategory,
+  addTopic,
+  updateTopic,
+  deleteTopic,
 } from "../../api/api-categories";
 
 const FETCH_HOT_TOPICS_PARAMS = {
@@ -65,8 +68,35 @@ export const deleteCategoryThunk = createAsyncThunk(
 
 export const updateCategoryThunk = createAsyncThunk(
   "categories/updateCategory",
-  async (category) => {
+  async (category, { dispatch }) => {
     const res = await updateCategory(category);
+    dispatch(fetchCategoriesList());
+    return res.data.data;
+  }
+);
+
+export const addNewTopicThunk = createAsyncThunk(
+  "topics/addNewTopic",
+  async (topic) => {
+    const res = await addTopic(topic);
+    return res.data.data;
+  }
+);
+
+export const updateTopicThunk = createAsyncThunk(
+  "topics/updateTopic",
+  async (topic, { dispatch }) => {
+    const res = await updateTopic(topic);
+    dispatch(fetchCategoriesList());
+    return res.data.data;
+  }
+);
+
+export const deleteTopicThunk = createAsyncThunk(
+  "topics/deleteTopic",
+  async (topicId, { dispatch }) => {
+    const res = await deleteTopic(topicId);
+    dispatch(fetchCategoriesList());
     return res.data.data;
   }
 );
@@ -134,11 +164,50 @@ const categoriesSlice = createSlice({
       })
       .addCase(updateCategoryThunk.fulfilled, (state, action) => {
         state.listCategory.status.status = Status.SUCCESS_STATUS;
-        const updatedCategory = action.payload[0];
+      })
+
+      // Add topic reducer
+      .addCase(addNewTopicThunk.pending, (state, action) => {
+        state.listCategory.status.status = Status.LOADING_STATUS;
+      })
+      .addCase(addNewTopicThunk.rejected, (state, action) => {
+        state.listCategory.status.status = Status.FAILED_STATUS;
+        state.listCategory.status.message = action.error.message;
+      })
+      .addCase(addNewTopicThunk.fulfilled, (state, action) => {
+        state.listCategory.status.status = Status.SUCCESS_STATUS;
+        const newTopic = action.payload[0];
         const updatedIndex = state.listCategory.entities.findIndex(
-          (value) => value.category_id === updatedCategory.category_id
+          (value) => value.category_id === newTopic.category_id
         );
-        state.listCategory.entities[updatedIndex] = updatedCategory;
+        state.listCategory.entities[updatedIndex].topics = [
+          ...state.listCategory.entities[updatedIndex].topics,
+          { topic_id: newTopic.topic_id, title: newTopic.title },
+        ];
+      })
+
+      // Update topic reducer
+      .addCase(updateTopicThunk.pending, (state, action) => {
+        state.listCategory.status.status = Status.LOADING_STATUS;
+      })
+      .addCase(updateTopicThunk.rejected, (state, action) => {
+        state.listCategory.status.status = Status.FAILED_STATUS;
+        state.listCategory.status.message = action.error.message;
+      })
+      .addCase(updateTopicThunk.fulfilled, (state, action) => {
+        state.listCategory.status.status = Status.SUCCESS_STATUS;
+      })
+
+      // Delete topic reducer
+      .addCase(deleteTopicThunk.pending, (state, action) => {
+        state.listCategory.status.status = Status.LOADING_STATUS;
+      })
+      .addCase(deleteTopicThunk.rejected, (state, action) => {
+        state.listCategory.status.status = Status.FAILED_STATUS;
+        state.listCategory.status.message = action.error.message;
+      })
+      .addCase(deleteTopicThunk.fulfilled, (state, action) => {
+        state.listCategory.status.status = Status.SUCCESS_STATUS;
       });
   },
 });

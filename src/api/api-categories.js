@@ -35,6 +35,30 @@ export const updateCategory = async (category) => {
   return await axiosInstance.patch(APIPath.UPDATE_CATEGORY, body);
 };
 
+export const addTopic = async (newTopic) => {
+  const axiosInstance = AxiosInstance();
+  const body = {
+    topics: [newTopic],
+  };
+  return await axiosInstance.put(APIPath.CREATE_TOPIC, body);
+};
+
+export const updateTopic = async (updateTopic) => {
+  const axiosInstance = AxiosInstance();
+  const body = {
+    topics: [updateTopic],
+  };
+  return await axiosInstance.patch(APIPath.CREATE_TOPIC, body);
+};
+
+export const deleteTopic = async (topicId) => {
+  const axiosInstance = AxiosInstance();
+  const body = {
+    topic_ids: [topicId],
+  };
+  return await axiosInstance.delete(APIPath.DELETE_TOPIC, { data: body });
+};
+
 /**
  * Get topics
  * @param {Object} params

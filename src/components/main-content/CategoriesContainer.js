@@ -4,12 +4,14 @@ import AppTheme from "../../constants/theme";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteCategoryThunk,
+  deleteTopicThunk,
   fetchCategoriesList,
 } from "../../store/slices/categoriesSlice";
 import { Delete } from "@material-ui/icons";
-import AddCategoryButton from "../widgets/dialogs/AddCategoryButton";
+import AddCategoryButton from "../widgets/buttons/AddCategoryButton";
 import ConfirmButton from "../widgets/buttons/ConfirmButton";
-import UpdateCategoryButton from "../widgets/dialogs/UpdateCategoryButton";
+import UpdateCategoryButton from "../widgets/buttons/UpdateCategoryButton";
+import AddTopicButton from "../widgets/buttons/AddTopicButton";
 
 export function CategoriesContainer(props) {
   const dispatch = useDispatch();
@@ -42,6 +44,14 @@ export function CategoriesContainer(props) {
     );
   };
 
+  const deleteTopicHandler = () => {
+    dispatch(
+      deleteTopicThunk(
+        categories[categorySelectedIndex]?.topics[topicSelectedIndex]?.topic_id
+      )
+    );
+  };
+
   const topicItems = categories[categorySelectedIndex]?.topics?.map(
     (topic, index) => (
       <CateItem
@@ -66,6 +76,18 @@ export function CategoriesContainer(props) {
         </Grid>
         <Grid item xs={6}>
           <CateTable title="Topics">{topicItems}</CateTable>
+          <TopicOption
+            deleteHandler={deleteTopicHandler}
+            categoryId={categories[categorySelectedIndex]?.category_id}
+            topicTitle={
+              categories[categorySelectedIndex]?.topics[topicSelectedIndex]
+                ?.title
+            }
+            topicId={
+              categories[categorySelectedIndex]?.topics[topicSelectedIndex]
+                ?.topic_id
+            }
+          />
         </Grid>
       </Grid>
     </Fragment>
@@ -130,7 +152,7 @@ function CategoryOption(props) {
 }
 
 function TopicOption(props) {
-  const { deleteHandler } = props;
+  const { deleteHandler, categoryId, topicTitle, topicId } = props;
   return (
     <Box
       border={0.5}
@@ -141,11 +163,16 @@ function TopicOption(props) {
       display="flex"
       justifyContent="flex-end"
     >
-      <AddCategoryButton />
-      <UpdateCategoryButton />
+      <AddTopicButton categoryId={categoryId} />
+      <AddTopicButton
+        categoryId={categoryId}
+        isUpdate={true}
+        topicTitle={topicTitle}
+        topicId={topicId}
+      />
       <ConfirmButton
-        title={"Delete Category"}
-        description={"Do you wanna delete this category?"}
+        title={"Delete Topic"}
+        description={"Do you wanna delete this topic?"}
         onConfirm={deleteHandler}
       >
         <Delete style={{ color: AppTheme.red }}></Delete>
