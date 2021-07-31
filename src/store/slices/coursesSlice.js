@@ -22,6 +22,7 @@ const initialState = {
  * @returns
  */
 const sendAPIRequest = async (params) => {
+  console.log("weofewfoweijfiowefjewoifjewoifj");
   const response = await getAllCourses(params);
   return response.data.data;
 };
@@ -36,19 +37,17 @@ export const fetchCourses = createAsyncThunk(
 
 export const enableCourseThunk = createAsyncThunk(
   "courses/enableCourse",
-  async (id, { dispatch }) => {
+  async (id) => {
     const res = await enableCourse(id);
-    dispatch(fetchCourses);
-    return res.data.data;
+    return id;
   }
 );
 
 export const disableCourseThunk = createAsyncThunk(
-  "courses/enableCourse",
-  async (id, { dispatch }) => {
+  "courses/disableCourse",
+  async (id) => {
     const res = await disableCourse(id);
-    dispatch(fetchCourses);
-    return res.data.data;
+    return id;
   }
 );
 
@@ -78,8 +77,27 @@ const courseSlice = createSlice({
       })
       .addCase(disableCourseThunk.fulfilled, (state, action) => {
         state.listCourses.status.status = Status.SUCCESS_STATUS;
+        const index = state.listCourses.entities.findIndex(
+          (value) => value.course_id === action.payload
+        );
+        state.listCourses.entities[index].state = "DISABLED";
       })
       .addCase(disableCourseThunk.rejected, (state, action) => {
+        state.listCourses.status.status = Status.FAILED_STATUS;
+        state.listCourses.status.message = action.error.message;
+      })
+      //
+      .addCase(enableCourseThunk.pending, (state, action) => {
+        state.listCourses.status.status = Status.LOADING_STATUS;
+      })
+      .addCase(enableCourseThunk.fulfilled, (state, action) => {
+        state.listCourses.status.status = Status.SUCCESS_STATUS;
+        const index = state.listCourses.entities.findIndex(
+          (value) => value.course_id === action.payload
+        );
+        state.listCourses.entities[index].state = "ENABLED";
+      })
+      .addCase(enableCourseThunk.rejected, (state, action) => {
         state.listCourses.status.status = Status.FAILED_STATUS;
         state.listCourses.status.message = action.error.message;
       });

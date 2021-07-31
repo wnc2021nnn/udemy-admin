@@ -27,6 +27,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { CustomDropDown } from "../widgets/Dropdown";
 import AppTheme from "../../constants/theme";
 import { disableCourseThunk } from "../../store/slices/coursesSlice";
+import { ToggleOff, ToggleOn } from "@material-ui/icons";
 
 export function CoursesContainer(props) {
   const dispatch = useDispatch();
@@ -85,6 +86,7 @@ export function CoursesContainer(props) {
           )
         )}
         disableCourseHandler={disableCourseHandler}
+        enableCourseHandler={enableCourseHandler}
       />
     </Box>
   );
@@ -183,15 +185,21 @@ const useToolbarStyles = makeStyles((theme) => ({
 }));
 
 const EnhancedTableToolbar = (props) => {
-  const { onDisable, onEnable } = props;
+  const { onDisable, onEnable, isDisableMode } = props;
   const classes = useToolbarStyles();
   const { numSelected } = props;
   const toolBar = (
     <Toolbar>
       <Tooltip title="Delete">
-        <IconButton aria-label="delete" onClick={onDisable}>
-          <DeleteIcon />
-        </IconButton>
+        {isDisableMode ? (
+          <IconButton onClick={onDisable}>
+            <ToggleOn />
+          </IconButton>
+        ) : (
+          <IconButton onClick={onEnable}>
+            <ToggleOff />
+          </IconButton>
+        )}
       </Tooltip>
     </Toolbar>
   );
@@ -234,7 +242,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function EnhancedTable(props) {
-  const { enableCourseHandler, disableCourseHandler } = props;
+  const { enableCourseHandler, disableCourseHandler, rows } = props;
 
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
@@ -272,7 +280,10 @@ function EnhancedTable(props) {
   };
 
   const isSelected = (id) => selectedId === id;
-
+  const isDisableMode = (id) => {
+    const index = rows.findIndex((value) => value.id === id);
+    return rows[index]?.isDisable ? false : true;
+  };
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, props.rows.length - page * rowsPerPage);
 
@@ -282,6 +293,8 @@ function EnhancedTable(props) {
         <EnhancedTableToolbar
           numSelected={selectedId.length}
           onDisable={() => disableCourseHandler(selectedId)}
+          onEnable={() => enableCourseHandler(selectedId)}
+          isDisableMode={isDisableMode(selectedId)}
         />
         <TableContainer className={classes.container}>
           <Table className={classes.table} size={dense ? "small" : "medium"}>
