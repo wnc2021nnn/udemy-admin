@@ -20,20 +20,12 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import AppTheme from "../../constants/theme";
 import { Box, Button } from "@material-ui/core";
 import { Add, Edit } from "@material-ui/icons";
+import { useDispatch } from "react-redux";
 
 export function StudentsContainer(props) {
+  const dispatch = useDispatch();
   return (
     <Box>
-      <Box display="flex" justifyContent="flex-start" mb={2}>
-        <Button
-          variant="contained"
-          style={{ backgroundColor: AppTheme.primary }}
-        >
-          <Add style={{ color: AppTheme.secondary }}></Add>
-          <Box width={"8px"} />
-          <text style={{ color: AppTheme.secondary }}>Add New Lecturers</text>
-        </Button>
-      </Box>
       <LecturersTable rows={rows} />
     </Box>
   );

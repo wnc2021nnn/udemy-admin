@@ -1,5 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getUserById, login } from "../../api/user-api";
+import {
+  createTeacher,
+  getAllStudent,
+  getAllTeacher,
+  getUserById,
+  login,
+} from "../../api/user-api";
 import Status from "../../constants/status-constants";
 
 const initialState = {
@@ -8,6 +14,13 @@ const initialState = {
       first_name: "",
       last_name: "",
     },
+    status: {
+      status: "",
+      message: "",
+    },
+  },
+  teachers: {
+    users: [],
     status: {
       status: "",
       message: "",
@@ -33,6 +46,31 @@ export const fetchUserInfor = createAsyncThunk(
   }
 );
 
+export const getAllTeacherThunk = createAsyncThunk(
+  "user/getAllTeacher",
+  async () => {
+    const res = await getAllTeacher();
+    return res.data.data;
+  }
+);
+
+export const getAllStudentThunk = createAsyncThunk(
+  "user/getAllStudent",
+  async () => {
+    const res = await getAllStudent();
+    return res.data.data;
+  }
+);
+
+export const createTeacherThunk = createAsyncThunk(
+  "user/createTeacher",
+  async (body, { dispatch }) => {
+    const res = await createTeacher(body);
+    dispatch(getAllTeacherThunk());
+    return res.data.data;
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: initialState,
@@ -50,16 +88,17 @@ const userSlice = createSlice({
         state.userInform.status.status = Status.FAILED_STATUS;
         state.userInform.status.message = action.error.message;
       })
-      .addCase(fetchUserInfor.pending, (state, action) => {
-        state.userInform.status.status = Status.LOADING_STATUS;
+      // Get all teacher reducers
+      .addCase(getAllTeacherThunk.pending, (state, action) => {
+        state.teachers.status.status = Status.LOADING_STATUS;
       })
-      .addCase(fetchUserInfor.fulfilled, (state, action) => {
-        state.userInform.status.status = Status.SUCCESS_STATUS;
-        state.userInform.user = action.payload;
+      .addCase(getAllTeacherThunk.fulfilled, (state, action) => {
+        state.teachers.status.status = Status.SUCCESS_STATUS;
+        state.teachers.users = action.payload;
       })
-      .addCase(fetchUserInfor.rejected, (state, action) => {
-        state.userInform.status.status = Status.FAILED_STATUS;
-        state.userInform.status.message = action.error.message;
+      .addCase(getAllTeacherThunk.rejected, (state, action) => {
+        state.teachers.status.status = Status.FAILED_STATUS;
+        state.teachers.status.message = action.error.message;
       });
   },
 });

@@ -1,4 +1,4 @@
-import AxiosIntance from "./config/api-config";
+import AxiosInstance from "./config/api-config";
 import APIPath from "../constants/api-constants/api-path";
 
 /**
@@ -12,7 +12,7 @@ import APIPath from "../constants/api-constants/api-path";
  * @returns response
  */
 export const register = async (body) => {
-  const axiosIntance = AxiosIntance();
+  const axiosIntance = AxiosInstance();
   const res = await axiosIntance.put(APIPath.USERS, body);
   return res;
 };
@@ -25,19 +25,34 @@ export const register = async (body) => {
  * @returns response
  */
 export const login = async (body) => {
-  const axiosIntance = AxiosIntance();
+  const axiosIntance = AxiosInstance();
   const res = await axiosIntance.post(APIPath.LOGIN, body);
   return res;
 };
 
 export const getUserById = async (userId) => {
-  const axiosIntance = AxiosIntance();
+  const axiosIntance = AxiosInstance();
   const res = await axiosIntance.get(`${APIPath.USERS}/${userId}`);
   return res;
 };
 
 export const changePassword = async (data) => {
-  const axiosIntance = AxiosIntance();
+  const axiosIntance = AxiosInstance();
   const res = await axiosIntance.patch(APIPath.USERS, data);
   return res;
+};
+
+export const getAllTeacher = async () => {
+  const axiosInstance = AxiosInstance();
+  return await axiosInstance.get(APIPath.USERS, { params: { role: 1 } });
+};
+
+export const createTeacher = async (body) => {
+  const axiosInstance = AxiosInstance();
+  return await axiosInstance.put(APIPath.CREATE_TEACHER, body);
+};
+
+export const getAllStudent = async () => {
+  const axiosInstance = AxiosInstance();
+  return await axiosInstance.get(APIPath.USERS, { params: { role: 2 } });
 };

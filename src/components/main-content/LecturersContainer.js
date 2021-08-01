@@ -7,7 +7,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
-import React from "react";
+import React, { useEffect } from "react";
 import clsx from "clsx";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -20,19 +20,30 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import AppTheme from "../../constants/theme";
 import { Box, Button } from "@material-ui/core";
 import { Add, Edit } from "@material-ui/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllTeacherThunk } from "../../store/slices/userSlice";
+import CreateTeacherButton from "../widgets/buttons/CreateTeacherButton";
 
 export function LecturersContainer(props) {
+  const dispatch = useDispatch();
+  const teachers = useSelector((state) => state.user.teachers.users);
+  const rows = teachers.map((teacher) => {
+    return createData(
+      teacher.user_id,
+      teacher.email,
+      teacher.first_name,
+      teacher.last_name
+    );
+  });
+
+  useEffect(() => {
+    dispatch(getAllTeacherThunk());
+  }, [dispatch]);
+
   return (
     <Box>
       <Box display="flex" justifyContent="flex-start" mb={2}>
-        <Button
-          variant="contained"
-          style={{ backgroundColor: AppTheme.primary }}
-        >
-          <Add style={{ color: AppTheme.secondary }}></Add>
-          <Box width={"8px"} />
-          <text style={{ color: AppTheme.secondary }}>Add New Lecturers</text>
-        </Button>
+        <CreateTeacherButton />
       </Box>
       <LecturersTable rows={rows} />
     </Box>

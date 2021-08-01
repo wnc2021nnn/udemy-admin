@@ -12,7 +12,7 @@ const APIPath = {
 
   GET_ALL_COURSES: "/courses",
   GET_COURSES_CONTENT: "courses-content",
-  
+
   USERS: "/users",
   LOGIN: "/auth",
   GET_COURSE_REVIEWS: "/course-reviews",
@@ -21,7 +21,8 @@ const APIPath = {
   GET_COURSE_CONTENT: "/content",
   PUT_REVIEW_COURSE: "/course-reviews",
   LOG: "/logs",
-  GET_MY_COURSES: "/courses/my-courses",
+
+  CREATE_TEACHER: "/users/teachers",
 };
 
 export default APIPath;
