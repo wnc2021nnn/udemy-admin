@@ -50,19 +50,6 @@ export function LecturersContainer(props) {
   );
 }
 
-const rows = [
-  createData(1, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(2, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(3, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(4, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(5, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(6, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(7, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(8, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(9, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(10, "nhinlechi@gmail.com", "Nhin", "Le"),
-];
-
 function createData(id, email, firstName, lastName) {
   return { id, email, firstName, lastName };
 }
