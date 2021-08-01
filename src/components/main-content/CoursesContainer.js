@@ -23,11 +23,12 @@ import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
-import DeleteIcon from "@material-ui/icons/Delete";
 import { CustomDropDown } from "../widgets/Dropdown";
 import AppTheme from "../../constants/theme";
 import { disableCourseThunk } from "../../store/slices/coursesSlice";
 import { ToggleOff, ToggleOn } from "@material-ui/icons";
+import Status from "../../constants/status-constants";
+import { LoadingComponent } from "../LoadingComponent";
 
 export function CoursesContainer(props) {
   const dispatch = useDispatch();
@@ -35,6 +36,10 @@ export function CoursesContainer(props) {
     (state) => state.categories.listCategory.entities
   );
   const courses = useSelector((state) => state.courses.listCourses.entities);
+  const status = useSelector(
+    (state) => state.courses.listCourses.status.status
+  );
+  const isLoading = status === Status.LOADING_STATUS;
 
   const [categorySelectedIndex, setCategorySelected] = useState(0);
   const [topicSelectedIndex, setTopicSelected] = useState(0);
@@ -88,6 +93,7 @@ export function CoursesContainer(props) {
         disableCourseHandler={disableCourseHandler}
         enableCourseHandler={enableCourseHandler}
       />
+      <LoadingComponent isLoading={isLoading} />
     </Box>
   );
 }
@@ -384,7 +390,5 @@ function EnhancedTable(props) {
 
 const CustomText = (props) => {
   const { children, isDisable } = props;
-  return (
-    <text style={{ color: isDisable ? "grey" : "black" }}>{children}</text>
-  );
+  return <text style={{ color: isDisable ? "red" : "black" }}>{children}</text>;
 };

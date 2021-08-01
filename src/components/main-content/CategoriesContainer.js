@@ -12,15 +12,27 @@ import AddCategoryButton from "../widgets/buttons/AddCategoryButton";
 import ConfirmButton from "../widgets/buttons/ConfirmButton";
 import UpdateCategoryButton from "../widgets/buttons/UpdateCategoryButton";
 import AddTopicButton from "../widgets/buttons/AddTopicButton";
+import Status from "../../constants/status-constants";
+import { LoadingComponent } from "../LoadingComponent";
 
 export function CategoriesContainer(props) {
   const dispatch = useDispatch();
   const categories = useSelector(
     (state) => state.categories.listCategory.entities
   );
+  const status = useSelector(
+    (state) => state.categories.listCategory.status.status
+  );
+  const isLoading = status === Status.LOADING_STATUS;
 
   const [categorySelectedIndex, setCategorySelected] = useState(0);
-  const [topicSelectedIndex, setTopicSelected] = useState(-1);
+  const [topicSelectedIndex, setTopicSelected] = useState(0);
+
+  const selectedCategory = categories[categorySelectedIndex];
+  const selectedTopic =
+    categories[categorySelectedIndex] !== undefined
+      ? categories[categorySelectedIndex].topics[topicSelectedIndex]
+      : null;
 
   useEffect(() => {
     dispatch(fetchCategoriesList());
@@ -39,29 +51,23 @@ export function CategoriesContainer(props) {
   ));
 
   const deleteHandler = () => {
-    dispatch(
-      deleteCategoryThunk(categories[categorySelectedIndex].category_id)
-    );
+    dispatch(deleteCategoryThunk(selectedCategory.category_id));
   };
 
   const deleteTopicHandler = () => {
     dispatch(
-      deleteTopicThunk(
-        categories[categorySelectedIndex]?.topics[topicSelectedIndex]?.topic_id
-      )
+      deleteTopicThunk(selectedCategory?.topics[topicSelectedIndex]?.topic_id)
     );
   };
 
-  const topicItems = categories[categorySelectedIndex]?.topics?.map(
-    (topic, index) => (
-      <CateItem
-        id={topic.topic_id}
-        value={topic.title}
-        isSelected={topicSelectedIndex === index ? true : false}
-        onClick={() => setTopicSelected(index)}
-      />
-    )
-  );
+  const topicItems = selectedCategory?.topics?.map((topic, index) => (
+    <CateItem
+      id={topic.topic_id}
+      value={topic.title}
+      isSelected={topicSelectedIndex === index ? true : false}
+      onClick={() => setTopicSelected(index)}
+    />
+  ));
 
   return (
     <Fragment>
@@ -70,26 +76,29 @@ export function CategoriesContainer(props) {
           <CateTable title="Categories">{cateItems}</CateTable>
           <CategoryOption
             deleteHandler={deleteHandler}
-            categoryId={categories[categorySelectedIndex]?.category_id}
-            categoryTitle={categories[categorySelectedIndex]?.title}
+            categoryId={selectedCategory?.category_id}
+            categoryTitle={selectedCategory?.title}
           />
         </Grid>
         <Grid item xs={6}>
           <CateTable title="Topics">{topicItems}</CateTable>
           <TopicOption
             deleteHandler={deleteTopicHandler}
-            categoryId={categories[categorySelectedIndex]?.category_id}
+            categoryId={selectedCategory?.category_id}
             topicTitle={
-              categories[categorySelectedIndex]?.topics[topicSelectedIndex]
-                ?.title
+              selectedCategory !== undefined && selectedTopic !== undefined
+                ? selectedTopic?.title
+                : ""
             }
             topicId={
-              categories[categorySelectedIndex]?.topics[topicSelectedIndex]
-                ?.topic_id
+              selectedCategory !== undefined && selectedTopic !== undefined
+                ? selectedTopic?.topic_id
+                : ""
             }
           />
         </Grid>
       </Grid>
+      <LoadingComponent isLoading={isLoading} />
     </Fragment>
   );
 }

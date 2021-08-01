@@ -52,8 +52,9 @@ export const fetchCategoriesList = createAsyncThunk(
 
 export const addNewCategoryThunk = createAsyncThunk(
   "categories/addNewCategory",
-  async (category) => {
+  async (category, {dispatch}) => {
     const res = await addCategory(category);
+    dispatch(fetchCategoriesList());
     return res.data.data;
   }
 );

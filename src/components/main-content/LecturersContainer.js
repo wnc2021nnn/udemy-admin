@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllTeacherThunk } from "../../store/slices/userSlice";
 import CreateTeacherButton from "../widgets/buttons/CreateTeacherButton";
 
+
 export function LecturersContainer(props) {
   const dispatch = useDispatch();
   const teachers = useSelector((state) => state.user.teachers.users);
