@@ -65,7 +65,7 @@ export const getAllStudentThunk = createAsyncThunk(
 export const createTeacherThunk = createAsyncThunk(
   "user/createTeacher",
   async (body, { dispatch }) => {
-    const res = await createTeacher(body);
+    const res = await createTeacher({ ...body, role: 1 });
     dispatch(getAllTeacherThunk());
     return res.data.data;
   }

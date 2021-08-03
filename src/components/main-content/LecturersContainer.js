@@ -18,16 +18,20 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AppTheme from "../../constants/theme";
-import { Box, Button } from "@material-ui/core";
+import { Box, Button, Dialog } from "@material-ui/core";
 import { Add, Edit } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllTeacherThunk } from "../../store/slices/userSlice";
 import CreateTeacherButton from "../widgets/buttons/CreateTeacherButton";
-
+import Status from "../../constants/status-constants";
+import { LoadingComponent } from "../LoadingComponent";
 
 export function LecturersContainer(props) {
   const dispatch = useDispatch();
   const teachers = useSelector((state) => state.user.teachers.users);
+  const status = useSelector((state) => state.user.teachers.status.status);
+  const isLoading = status === Status.LOADING_STATUS;
+
   const rows = teachers.map((teacher) => {
     return createData(
       teacher.user_id,
@@ -47,6 +51,7 @@ export function LecturersContainer(props) {
         <CreateTeacherButton />
       </Box>
       <LecturersTable rows={rows} />
+      <LoadingComponent isLoading={isLoading} />
     </Box>
   );
 }
@@ -115,11 +120,6 @@ function EnhancedTableHead(props) {
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </span>
-              ) : null}
             </TableSortLabel>
           </TableCell>
         ))}
