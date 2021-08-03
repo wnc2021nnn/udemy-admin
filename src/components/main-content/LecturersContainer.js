@@ -18,8 +18,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AppTheme from "../../constants/theme";
-import { Box, Button, Dialog } from "@material-ui/core";
-import { Add, Edit } from "@material-ui/icons";
+import { Box } from "@material-ui/core";
+import { Edit } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllTeacherThunk } from "../../store/slices/userSlice";
 import CreateTeacherButton from "../widgets/buttons/CreateTeacherButton";
@@ -99,7 +99,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, order, orderBy, onRequestSort } = props;
+  const { order, orderBy, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };

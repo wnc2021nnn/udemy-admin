@@ -26,6 +26,13 @@ const initialState = {
       message: "",
     },
   },
+  students: {
+    users: [],
+    status: {
+      status: "",
+      message: "",
+    }
+  }
 };
 
 const sendAPIRequest = async (body) => {
@@ -99,7 +106,30 @@ const userSlice = createSlice({
       .addCase(getAllTeacherThunk.rejected, (state, action) => {
         state.teachers.status.status = Status.FAILED_STATUS;
         state.teachers.status.message = action.error.message;
-      });
+      })
+      // Create teacher reducers
+      .addCase(createTeacherThunk.pending, (state, action) => {
+        state.teachers.status.status = Status.LOADING_STATUS;
+      })
+      .addCase(createTeacherThunk.fulfilled, (state, action) => {
+        state.teachers.status.status = Status.SUCCESS_STATUS;
+      })
+      .addCase(createTeacherThunk.rejected, (state, action) => {
+        state.teachers.status.status = Status.FAILED_STATUS;
+        state.teachers.status.message = action.error.message;
+      })
+      // Get all teacher reducers
+      .addCase(getAllStudentThunk.pending, (state, action) => {
+        state.students.status.status = Status.LOADING_STATUS;
+      })
+      .addCase(getAllStudentThunk.fulfilled, (state, action) => {
+        state.students.status.status = Status.SUCCESS_STATUS;
+        state.students.users = action.payload;
+      })
+      .addCase(getAllStudentThunk.rejected, (state, action) => {
+        state.students.status.status = Status.FAILED_STATUS;
+        state.students.status.message = action.error.message;
+      })
   },
 });
 

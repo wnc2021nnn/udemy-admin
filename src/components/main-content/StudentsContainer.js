@@ -18,31 +18,40 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AppTheme from "../../constants/theme";
-import { Box, Button } from "@material-ui/core";
-import { Add, Edit } from "@material-ui/icons";
-import { useDispatch } from "react-redux";
+import { Box } from "@material-ui/core";
+import { Edit } from "@material-ui/icons";
+import Status from "../../constants/status-constants";
+import { getAllStudentThunk } from "../../store/slices/userSlice";
+import { LoadingComponent } from "../LoadingComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 
 export function StudentsContainer(props) {
   const dispatch = useDispatch();
+  const students = useSelector((state) => state.user.students.users);
+  const status = useSelector((state) => state.user.students.status.status);
+  const isLoading = status === Status.LOADING_STATUS;
+
+  const rows = students.map((student) => {
+    return createData(
+      student.user_id,
+      student.email,
+      student.first_name,
+      student.last_name
+    );
+  });
+
+  useEffect(() => {
+    dispatch(getAllStudentThunk());
+  }, [dispatch]);
+
   return (
     <Box>
       <LecturersTable rows={rows} />
+      <LoadingComponent isLoading={isLoading} />
     </Box>
   );
 }
-
-const rows = [
-  createData(1, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(2, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(3, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(4, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(5, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(6, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(7, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(8, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(9, "nhinlechi@gmail.com", "Nhin", "Le"),
-  createData(10, "nhinlechi@gmail.com", "Nhin", "Le"),
-];
 
 function createData(id, email, firstName, lastName) {
   return { id, email, firstName, lastName };
@@ -142,9 +151,6 @@ const EnhancedTableToolbar = (props) => {
     <Toolbar>
       <Tooltip title="Delete">
         <Box display="flex">
-          <IconButton>
-            <Edit style={{ color: AppTheme.black }}></Edit>
-          </IconButton>
           <IconButton>
             <DeleteIcon style={{ color: AppTheme.red }} />
           </IconButton>
