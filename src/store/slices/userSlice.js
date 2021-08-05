@@ -1,10 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   createTeacher,
+  disableUser,
   getAllStudent,
   getAllTeacher,
   getUserById,
   login,
+  enableUser,
 } from "../../api/user-api";
 import Status from "../../constants/status-constants";
 
@@ -31,8 +33,8 @@ const initialState = {
     status: {
       status: "",
       message: "",
-    }
-  }
+    },
+  },
 };
 
 const sendAPIRequest = async (body) => {
@@ -73,6 +75,24 @@ export const createTeacherThunk = createAsyncThunk(
   "user/createTeacher",
   async (body, { dispatch }) => {
     const res = await createTeacher({ ...body, role: 1 });
+    dispatch(getAllTeacherThunk());
+    return res.data.data;
+  }
+);
+
+export const disableTeacherThunk = createAsyncThunk(
+  "user/disableTeacher",
+  async (id, { dispatch }) => {
+    const res = await disableUser(id);
+    dispatch(getAllTeacherThunk());
+    return res.data.data;
+  }
+);
+
+export const enableTeacherThunk = createAsyncThunk(
+  "user/enableTeacher",
+  async (id, { dispatch }) => {
+    const res = await enableUser(id);
     dispatch(getAllTeacherThunk());
     return res.data.data;
   }
@@ -130,6 +150,28 @@ const userSlice = createSlice({
         state.students.status.status = Status.FAILED_STATUS;
         state.students.status.message = action.error.message;
       })
+      // Disable teacher reducers
+      .addCase(disableTeacherThunk.pending, (state, action) => {
+        state.teachers.status.status = Status.LOADING_STATUS;
+      })
+      .addCase(disableTeacherThunk.fulfilled, (state, action) => {
+        state.teachers.status.status = Status.SUCCESS_STATUS;
+      })
+      .addCase(disableTeacherThunk.rejected, (state, action) => {
+        state.teachers.status.status = Status.FAILED_STATUS;
+        state.teachers.status.message = action.error.message;
+      })
+      // Enable teacher reducers
+      .addCase(enableTeacherThunk.pending, (state, action) => {
+        state.teachers.status.status = Status.LOADING_STATUS;
+      })
+      .addCase(enableTeacherThunk.fulfilled, (state, action) => {
+        state.teachers.status.status = Status.SUCCESS_STATUS;
+      })
+      .addCase(enableTeacherThunk.rejected, (state, action) => {
+        state.teachers.status.status = Status.FAILED_STATUS;
+        state.teachers.status.message = action.error.message;
+      });
   },
 });
 

@@ -196,7 +196,7 @@ const EnhancedTableToolbar = (props) => {
   const { numSelected } = props;
   const toolBar = (
     <Toolbar>
-      <Tooltip title="Delete">
+      <Tooltip>
         {isDisableMode ? (
           <IconButton onClick={onDisable}>
             <ToggleOn />

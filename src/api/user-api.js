@@ -52,6 +52,22 @@ export const createTeacher = async (body) => {
   return await axiosInstance.put(APIPath.CREATE_TEACHER, body);
 };
 
+export const disableUser = async (id) => {
+  const axiosInstance = AxiosInstance();
+  const body = {
+    user_ids: [id],
+  };
+  return await axiosInstance.delete(APIPath.USERS, { data: body });
+};
+
+export const enableUser = async (id) => {
+  const axiosInstance = AxiosInstance();
+  const body = {
+    user_ids: [id],
+  };
+  //TODO: call enable teacher API
+}
+
 export const getAllStudent = async () => {
   const axiosInstance = AxiosInstance();
   return await axiosInstance.get(APIPath.USERS, { params: { role: 2 } });

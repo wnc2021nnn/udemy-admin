@@ -8,7 +8,6 @@ import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import React, { useEffect } from "react";
-import clsx from "clsx";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -16,15 +15,19 @@ import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
-import DeleteIcon from "@material-ui/icons/Delete";
 import AppTheme from "../../constants/theme";
 import { Box } from "@material-ui/core";
 import { Edit } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllTeacherThunk } from "../../store/slices/userSlice";
+import {
+  disableTeacherThunk,
+  getAllTeacherThunk,
+} from "../../store/slices/userSlice";
 import CreateTeacherButton from "../widgets/buttons/CreateTeacherButton";
 import Status from "../../constants/status-constants";
 import { LoadingComponent } from "../LoadingComponent";
+import { ToggleOn, ToggleOff } from "@material-ui/icons";
+import clsx from "clsx";
 
 export function LecturersContainer(props) {
   const dispatch = useDispatch();
@@ -37,7 +40,8 @@ export function LecturersContainer(props) {
       teacher.user_id,
       teacher.email,
       teacher.first_name,
-      teacher.last_name
+      teacher.last_name,
+      teacher.state === "DISABLED"
     );
   });
 
@@ -45,19 +49,31 @@ export function LecturersContainer(props) {
     dispatch(getAllTeacherThunk());
   }, [dispatch]);
 
+  const disableLecturers = (id) => {
+    dispatch(disableTeacherThunk(id));
+  };
+
+  const enableLecturers = (id) => {
+    console.log("enable");
+  };
+
   return (
     <Box>
       <Box display="flex" justifyContent="flex-start" mb={2}>
         <CreateTeacherButton />
       </Box>
-      <LecturersTable rows={rows} />
+      <LecturersTable
+        rows={rows}
+        enableLecturers={enableLecturers}
+        disableLecturers={disableLecturers}
+      />
       <LoadingComponent isLoading={isLoading} />
     </Box>
   );
 }
 
-function createData(id, email, firstName, lastName) {
-  return { id, email, firstName, lastName };
+function createData(id, email, firstName, lastName, isDisable) {
+  return { id, email, firstName, lastName, isDisable };
 }
 
 function descendingComparator(a, b, orderBy) {
@@ -143,18 +159,27 @@ const useToolbarStyles = makeStyles((theme) => ({
 }));
 
 const EnhancedTableToolbar = (props) => {
+  const { onDisable, onEnable, isDisableMode } = props;
   const classes = useToolbarStyles();
   const { numSelected } = props;
   const toolBar = (
     <Toolbar>
       <Tooltip title="Delete">
         <Box display="flex">
-          <IconButton>
-            <Edit style={{ color: AppTheme.black }}></Edit>
-          </IconButton>
-          <IconButton>
-            <DeleteIcon style={{ color: AppTheme.red }} />
-          </IconButton>
+          <Box>
+            <IconButton>
+              <Edit style={{ color: AppTheme.black }}></Edit>
+            </IconButton>
+          </Box>
+          {isDisableMode ? (
+            <IconButton onClick={onDisable}>
+              <ToggleOn />
+            </IconButton>
+          ) : (
+            <IconButton onClick={onEnable}>
+              <ToggleOff />
+            </IconButton>
+          )}
         </Box>
       </Tooltip>
     </Toolbar>
@@ -162,10 +187,10 @@ const EnhancedTableToolbar = (props) => {
 
   return (
     <Box
+      display="flex"
       className={clsx(classes.root, {
         [classes.highlight]: numSelected > 0,
       })}
-      display="flex"
     >
       <Typography
         className={classes.title}
@@ -198,10 +223,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function LecturersTable(props) {
+  const { disableLecturers, enableLecturers, rows } = props;
+
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
-  const [selected, setSelected] = React.useState([]);
+  const [selectedId, setSelected] = React.useState("");
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -213,10 +240,10 @@ function LecturersTable(props) {
   };
 
   const handleClick = (event, id) => {
-    if (selected[0] === id) {
-      setSelected([]);
+    if (selectedId === id) {
+      setSelected("");
     } else {
-      setSelected([id]);
+      setSelected(id);
     }
   };
 
@@ -233,7 +260,12 @@ function LecturersTable(props) {
     setDense(event.target.checked);
   };
 
-  const isSelected = (name) => selected.indexOf(name) !== -1;
+  const isSelected = (id) => selectedId === id;
+  const isDisableMode = (id) => {
+    const index = rows.findIndex((value) => value.id === id);
+    console.log(`123 ${rows[index]}`);
+    return rows[index]?.isDisable ? false : true;
+  };
 
   const emptyRows =
     rowsPerPage -
@@ -242,12 +274,17 @@ function LecturersTable(props) {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selectedId.length}
+          onDisable={() => disableLecturers(selectedId)}
+          onEnable={() => enableLecturers(selectedId)}
+          isDisableMode={isDisableMode(selectedId)}
+        />
         <TableContainer className={classes.container}>
           <Table className={classes.table} size={dense ? "small" : "medium"}>
             <EnhancedTableHead
               classes={classes}
-              numSelected={selected.length}
+              numSelected={selectedId.length}
               order={order}
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
@@ -277,11 +314,25 @@ function LecturersTable(props) {
                         padding="default"
                         align="center"
                       >
-                        {row.id}
+                        <CustomText isDisable={row.isDisable}>
+                          {row.id}
+                        </CustomText>
                       </TableCell>
-                      <TableCell align="left">{row.email}</TableCell>
-                      <TableCell align="left">{row.firstName}</TableCell>
-                      <TableCell align="left">{row.lastName}</TableCell>
+                      <TableCell align="left">
+                        <CustomText isDisable={row.isDisable}>
+                          {row.email}
+                        </CustomText>
+                      </TableCell>
+                      <TableCell align="left">
+                        <CustomText isDisable={row.isDisable}>
+                          {row.firstName}
+                        </CustomText>
+                      </TableCell>
+                      <TableCell align="left">
+                        <CustomText isDisable={row.isDisable}>
+                          {row.lastName}
+                        </CustomText>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -310,3 +361,8 @@ function LecturersTable(props) {
     </div>
   );
 }
+
+const CustomText = (props) => {
+  const { children, isDisable } = props;
+  return <text style={{ color: isDisable ? "red" : "black" }}>{children}</text>;
+};
