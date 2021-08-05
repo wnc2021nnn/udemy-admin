@@ -7,6 +7,7 @@ import {
   getUserById,
   login,
   enableUser,
+  updateUser,
 } from "../../api/user-api";
 import Status from "../../constants/status-constants";
 
@@ -94,6 +95,33 @@ export const enableTeacherThunk = createAsyncThunk(
   async (id, { dispatch }) => {
     const res = await enableUser(id);
     dispatch(getAllTeacherThunk());
+    return res.data.data;
+  }
+);
+
+export const updateTeacherThunk = createAsyncThunk(
+  "user/updateTeacher",
+  async (body, { dispatch }) => {
+    const res = await updateUser(body);
+    dispatch(getAllStudentThunk());
+    return res.data.data;
+  }
+);
+
+export const disableStudentThunk = createAsyncThunk(
+  "user/disableStudent",
+  async (id, { dispatch }) => {
+    const res = await disableUser(id);
+    dispatch(getAllStudentThunk());
+    return res.data.data;
+  }
+);
+
+export const enableStudentThunk = createAsyncThunk(
+  "user/enableStudent",
+  async (id, { dispatch }) => {
+    const res = await enableUser(id);
+    dispatch(getAllStudentThunk());
     return res.data.data;
   }
 );

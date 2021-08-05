@@ -16,7 +16,7 @@ function CreateTeacherForm(props) {
 
   const submitHandler = (event) => {
     dispatch(createTeacherThunk(newTeacherInfo));
-    onSubmit();
+    onSubmit?.call();
     event.preventDefault();
   };
 

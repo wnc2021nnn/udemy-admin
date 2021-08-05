@@ -7,7 +7,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -28,12 +28,15 @@ import Status from "../../constants/status-constants";
 import { LoadingComponent } from "../LoadingComponent";
 import { ToggleOn, ToggleOff } from "@material-ui/icons";
 import clsx from "clsx";
+import UpdateTeacherFormDialog from "../widgets/UpdateTeacherFormDialog";
 
 export function LecturersContainer(props) {
   const dispatch = useDispatch();
   const teachers = useSelector((state) => state.user.teachers.users);
   const status = useSelector((state) => state.user.teachers.status.status);
   const isLoading = status === Status.LOADING_STATUS;
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState({});
 
   const rows = teachers.map((teacher) => {
     return createData(
@@ -57,6 +60,12 @@ export function LecturersContainer(props) {
     console.log("enable");
   };
 
+  const editHandler = (id) => {
+    const user = teachers.find((teacher) => teacher.user_id === id);
+    setSelectedUser(user);
+    setOpen(true);
+  };
+
   return (
     <Box>
       <Box display="flex" justifyContent="flex-start" mb={2}>
@@ -66,7 +75,9 @@ export function LecturersContainer(props) {
         rows={rows}
         enableLecturers={enableLecturers}
         disableLecturers={disableLecturers}
+        onEdit={editHandler}
       />
+      <UpdateTeacherFormDialog user={selectedUser} open={open} setOpen={setOpen}/>
       <LoadingComponent isLoading={isLoading} />
     </Box>
   );
@@ -159,15 +170,16 @@ const useToolbarStyles = makeStyles((theme) => ({
 }));
 
 const EnhancedTableToolbar = (props) => {
-  const { onDisable, onEnable, isDisableMode } = props;
+  const { onDisable, onEnable, isDisableMode, onEdit } = props;
   const classes = useToolbarStyles();
   const { numSelected } = props;
+
   const toolBar = (
     <Toolbar>
       <Tooltip title="Delete">
         <Box display="flex">
           <Box>
-            <IconButton>
+            <IconButton onClick={onEdit}>
               <Edit style={{ color: AppTheme.black }}></Edit>
             </IconButton>
           </Box>
@@ -223,7 +235,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function LecturersTable(props) {
-  const { disableLecturers, enableLecturers, rows } = props;
+  const { disableLecturers, enableLecturers, rows, onEdit } = props;
 
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
@@ -263,7 +275,6 @@ function LecturersTable(props) {
   const isSelected = (id) => selectedId === id;
   const isDisableMode = (id) => {
     const index = rows.findIndex((value) => value.id === id);
-    console.log(`123 ${rows[index]}`);
     return rows[index]?.isDisable ? false : true;
   };
 
@@ -279,6 +290,7 @@ function LecturersTable(props) {
           onDisable={() => disableLecturers(selectedId)}
           onEnable={() => enableLecturers(selectedId)}
           isDisableMode={isDisableMode(selectedId)}
+          onEdit={() => onEdit(selectedId)}
         />
         <TableContainer className={classes.container}>
           <Table className={classes.table} size={dense ? "small" : "medium"}>

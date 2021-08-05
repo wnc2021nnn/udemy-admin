@@ -72,3 +72,8 @@ export const getAllStudent = async () => {
   const axiosInstance = AxiosInstance();
   return await axiosInstance.get(APIPath.USERS, { params: { role: 2 } });
 };
+
+export const updateUser = async (body) => {
+  const axiosInstance = AxiosInstance();
+  return await axiosInstance.patch(APIPath.USERS, body);
+}
