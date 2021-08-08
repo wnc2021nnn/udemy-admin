@@ -22,7 +22,6 @@ const initialState = {
  * @returns
  */
 const sendAPIRequest = async (params) => {
-  console.log("weofewfoweijfiowefjewoifjewoifj");
   const response = await getAllCourses(params);
   return response.data.data;
 };
@@ -38,7 +37,7 @@ export const fetchCourses = createAsyncThunk(
 export const enableCourseThunk = createAsyncThunk(
   "courses/enableCourse",
   async (id) => {
-    const res = await enableCourse(id);
+    await enableCourse(id);
     return id;
   }
 );
@@ -46,7 +45,7 @@ export const enableCourseThunk = createAsyncThunk(
 export const disableCourseThunk = createAsyncThunk(
   "courses/disableCourse",
   async (id) => {
-    const res = await disableCourse(id);
+    await disableCourse(id);
     return id;
   }
 );

@@ -103,7 +103,7 @@ export const updateTeacherThunk = createAsyncThunk(
   "user/updateTeacher",
   async (body, { dispatch }) => {
     const res = await updateUser(body);
-    dispatch(getAllStudentThunk());
+    dispatch(getAllTeacherThunk());
     return res.data.data;
   }
 );
@@ -197,6 +197,17 @@ const userSlice = createSlice({
         state.teachers.status.status = Status.SUCCESS_STATUS;
       })
       .addCase(enableTeacherThunk.rejected, (state, action) => {
+        state.teachers.status.status = Status.FAILED_STATUS;
+        state.teachers.status.message = action.error.message;
+      })
+       // Update teacher reducers
+       .addCase(updateTeacherThunk.pending, (state, action) => {
+        state.teachers.status.status = Status.LOADING_STATUS;
+      })
+      .addCase(updateTeacherThunk.fulfilled, (state, action) => {
+        state.teachers.status.status = Status.SUCCESS_STATUS;
+      })
+      .addCase(updateTeacherThunk.rejected, (state, action) => {
         state.teachers.status.status = Status.FAILED_STATUS;
         state.teachers.status.message = action.error.message;
       });

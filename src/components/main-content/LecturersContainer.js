@@ -21,6 +21,7 @@ import { Edit } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
   disableTeacherThunk,
+  enableTeacherThunk,
   getAllTeacherThunk,
 } from "../../store/slices/userSlice";
 import CreateTeacherButton from "../widgets/buttons/CreateTeacherButton";
@@ -57,7 +58,7 @@ export function LecturersContainer(props) {
   };
 
   const enableLecturers = (id) => {
-    console.log("enable");
+    dispatch(enableTeacherThunk(id))
   };
 
   const editHandler = (id) => {
@@ -176,7 +177,7 @@ const EnhancedTableToolbar = (props) => {
 
   const toolBar = (
     <Toolbar>
-      <Tooltip title="Delete">
+      <Tooltip title="Edit">
         <Box display="flex">
           <Box>
             <IconButton onClick={onEdit}>

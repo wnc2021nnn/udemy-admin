@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, TextField, Button, Dialog } from "@material-ui/core";
 import AppTheme from "../../constants/theme";
 import { useDispatch } from "react-redux";
@@ -7,10 +7,11 @@ import { updateTeacherThunk } from "../../store/slices/userSlice";
 function UpdateTeacherFormDialog(props) {
   const { user, setOpen, open} = props;
   const dispatch = useDispatch();
-  const [newTeacherInfo, setNewTeacherInfo] = useState({
-    first_name: "",
-    last_name: "",
-  });
+  const [newTeacherInfo, setNewTeacherInfo] = useState({});
+
+  useEffect(() => {
+    setNewTeacherInfo(user)
+  }, [user])
 
   const handleClose = () => {
     setOpen(false);

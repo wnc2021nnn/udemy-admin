@@ -60,12 +60,12 @@ export const disableUser = async (id) => {
   return await axiosInstance.delete(APIPath.USERS, { data: body });
 };
 
-export const enableUser = async (id) => {
+export const enableUser = async (userId) => {
   const axiosInstance = AxiosInstance();
   const body = {
-    user_ids: [id],
+    state: "ENABLED"
   };
-  //TODO: call enable teacher API
+  return await axiosInstance.patch(`${APIPath.USERS}/${userId}`, body)
 }
 
 export const getAllStudent = async () => {
@@ -75,5 +75,5 @@ export const getAllStudent = async () => {
 
 export const updateUser = async (body) => {
   const axiosInstance = AxiosInstance();
-  return await axiosInstance.patch(APIPath.USERS, body);
+  return await axiosInstance.patch(`${APIPath.USERS}/${body.user_id}`, body);
 }
