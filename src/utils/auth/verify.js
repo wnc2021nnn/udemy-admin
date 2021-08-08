@@ -14,3 +14,7 @@ export const verifyPassword = (password) => {
 export const getToken = () => {
     return localStorage.getItem(Util.ACCESS_TOKEN);
 };
+
+export const getUserId = () => {
+  return localStorage.getItem(Util.USER_ID);
+};

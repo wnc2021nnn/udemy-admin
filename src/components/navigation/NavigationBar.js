@@ -12,7 +12,11 @@ export function NavigationBar(props) {
           <img src={logoIcon} alt="" />
         </NavLink>
       </Box>
-      <Avatar style={{ height: "48px", width: "48px" }} />
+      <Avatar style={{ height: "48px", width: "48px" }}>
+        <NavLink to="/profile" activeClassName={classes.active}>
+          Profile
+        </NavLink>
+      </Avatar>
     </nav>
   );
 }

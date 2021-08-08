@@ -108,6 +108,15 @@ export const updateTeacherThunk = createAsyncThunk(
   }
 );
 
+export const updateUserThunk = createAsyncThunk(
+  "user/updateUser",
+  async (body, { dispatch }) => {
+    const res = await updateUser(body);
+    dispatch(fetchUserInfor(body.user_id));
+    return res.data.data;
+  }
+);
+
 export const disableStudentThunk = createAsyncThunk(
   "user/disableStudent",
   async (id, { dispatch }) => {
@@ -129,7 +138,11 @@ export const enableStudentThunk = createAsyncThunk(
 const userSlice = createSlice({
   name: "user",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    logOut(state, action) {
+      return initialState;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(userLogin.pending, (state, action) => {
@@ -140,6 +153,29 @@ const userSlice = createSlice({
         state.userInform.user = action.payload;
       })
       .addCase(userLogin.rejected, (state, action) => {
+        state.userInform.status.status = Status.FAILED_STATUS;
+        state.userInform.status.message = action.error.message;
+      })
+      // Fetch User Info
+      .addCase(fetchUserInfor.pending, (state, action) => {
+        state.userInform.status.status = Status.LOADING_STATUS;
+      })
+      .addCase(fetchUserInfor.fulfilled, (state, action) => {
+        state.userInform.status.status = Status.SUCCESS_STATUS;
+        state.userInform.user = action.payload;
+      })
+      .addCase(fetchUserInfor.rejected, (state, action) => {
+        state.userInform.status.status = Status.FAILED_STATUS;
+        state.userInform.status.message = action.error.message;
+      })
+      // Update User Info
+      .addCase(updateUserThunk.pending, (state, action) => {
+        state.userInform.status.status = Status.LOADING_STATUS;
+      })
+      .addCase(updateUserThunk.fulfilled, (state, action) => {
+        state.userInform.status.status = Status.SUCCESS_STATUS;
+      })
+      .addCase(updateUserThunk.rejected, (state, action) => {
         state.userInform.status.status = Status.FAILED_STATUS;
         state.userInform.status.message = action.error.message;
       })
@@ -200,8 +236,8 @@ const userSlice = createSlice({
         state.teachers.status.status = Status.FAILED_STATUS;
         state.teachers.status.message = action.error.message;
       })
-       // Update teacher reducers
-       .addCase(updateTeacherThunk.pending, (state, action) => {
+      // Update teacher reducers
+      .addCase(updateTeacherThunk.pending, (state, action) => {
         state.teachers.status.status = Status.LOADING_STATUS;
       })
       .addCase(updateTeacherThunk.fulfilled, (state, action) => {
@@ -213,5 +249,7 @@ const userSlice = createSlice({
       });
   },
 });
+
+export const { logOut } = userSlice.actions;
 
 export default userSlice.reducer;
