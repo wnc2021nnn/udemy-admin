@@ -32,17 +32,44 @@ import { LoadingComponent } from "../LoadingComponent";
 
 export function CoursesContainer(props) {
   const dispatch = useDispatch();
-  const categories = useSelector(
+  let categories = useSelector(
     (state) => state.categories.listCategory.entities
   );
-  const courses = useSelector((state) => state.courses.listCourses.entities);
+  categories = [{ title: "Categories", topics: [] }, ...categories];
+
+  // Selected Index
+  const [categorySelectedIndex, setCategorySelected] = useState(0);
+  const [topicSelectedIndex, setTopicSelected] = useState(0);
+
+  // Filter
+  const filterCourses = (courses) => {
+    let rs = courses;
+    const topics = categories[categorySelectedIndex]?.topics;
+    if (categorySelectedIndex > 0) {
+      rs = courses.filter((course) => {
+        return (
+          topics.findIndex((topic) => course.topic_id === topic.topic_id) >= 0
+        );
+      });
+    }
+    if (topicSelectedIndex > 0) {
+      rs = rs.filter(
+        (course) => course.topic_id === topics[topicSelectedIndex - 1].topic_id
+      );
+    }
+    return rs;
+  };
+
+  // Courses
+  const courses = useSelector((state) =>
+    filterCourses(state.courses.listCourses.entities)
+  );
+
+  // Status
   const status = useSelector(
     (state) => state.courses.listCourses.status.status
   );
   const isLoading = status === Status.LOADING_STATUS;
-
-  const [categorySelectedIndex, setCategorySelected] = useState(0);
-  const [topicSelectedIndex, setTopicSelected] = useState(0);
 
   useEffect(() => {
     dispatch(fetchCourses());
@@ -56,25 +83,32 @@ export function CoursesContainer(props) {
     dispatch(disableCourseThunk(id));
   };
 
+  const filterCoursesByCategory = (index) => {
+    setCategorySelected(index);
+    setTopicSelected(0);
+  };
+
+  const filterCoursesByTopic = (index) => {
+    setTopicSelected(index);
+  };
+
   return (
     <Box>
       <Box display="flex">
         <CustomDropDown
           options={[...categories?.map((category, index) => category.title)]}
-          clickItemCallback={(index) => {
-            setCategorySelected(index);
-            setTopicSelected(0);
-          }}
+          clickItemCallback={filterCoursesByCategory}
           selectedIndex={categorySelectedIndex}
         />
         <Box width="16px" />
         <CustomDropDown
           options={[
+            ...["All"],
             ...categories[categorySelectedIndex]?.topics?.map(
               (topic, index) => topic.title
             ),
           ]}
-          clickItemCallback={(index) => setTopicSelected(index)}
+          clickItemCallback={filterCoursesByTopic}
           selectedIndex={topicSelectedIndex}
         />
       </Box>
