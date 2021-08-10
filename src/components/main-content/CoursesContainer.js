@@ -1,4 +1,4 @@
-import { Box } from "@material-ui/core";
+import { Box, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useState, useEffect } from "react";
 import Paper from "@material-ui/core/Paper";
@@ -29,6 +29,8 @@ import { disableCourseThunk } from "../../store/slices/coursesSlice";
 import { ToggleOff, ToggleOn } from "@material-ui/icons";
 import Status from "../../constants/status-constants";
 import { LoadingComponent } from "../LoadingComponent";
+import { Autocomplete } from "@material-ui/lab";
+import { getAllTeacherThunk } from "../../store/slices/userSlice";
 
 export function CoursesContainer(props) {
   const dispatch = useDispatch();
@@ -64,6 +66,8 @@ export function CoursesContainer(props) {
   const courses = useSelector((state) =>
     filterCourses(state.courses.listCourses.entities)
   );
+  // Teachers
+  const teachers = useSelector((state) => state.user.teachers.users);
 
   // Status
   const status = useSelector(
@@ -73,6 +77,7 @@ export function CoursesContainer(props) {
 
   useEffect(() => {
     dispatch(fetchCourses());
+    dispatch(getAllTeacherThunk());
   }, [dispatch]);
 
   const enableCourseHandler = (id) => {
@@ -90,6 +95,18 @@ export function CoursesContainer(props) {
 
   const filterCoursesByTopic = (index) => {
     setTopicSelected(index);
+  };
+
+  const filterCourseByTeacherId = (teacherId) => {
+    if (teacherId !== "") {
+      dispatch(
+        fetchCourses({
+          teacher_id: teacherId,
+        })
+      );
+    } else {
+      dispatch(fetchCourses());
+    }
   };
 
   return (
@@ -111,6 +128,27 @@ export function CoursesContainer(props) {
           clickItemCallback={filterCoursesByTopic}
           selectedIndex={topicSelectedIndex}
         />
+        <Box flexGrow={1} display="flex" justifyContent="flex-end">
+          <Autocomplete
+            id="combo-box-demo"
+            options={teachers}
+            getOptionLabel={(option) => option.user_id}
+            style={{ width: 300 }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Teacher ID"
+                variant="outlined"
+                size="small"
+                onKeyDown={(e) => {
+                  if (e.code === "Enter") {
+                    filterCourseByTeacherId(e.target.value);
+                  }
+                }}
+              />
+            )}
+          />
+        </Box>
       </Box>
       <Box height="32px" />
       <EnhancedTable
