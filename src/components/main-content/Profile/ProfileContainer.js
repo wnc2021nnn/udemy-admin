@@ -6,10 +6,15 @@ import {
 } from "../../../store/slices/userSlice";
 import { HeaderContainer } from "./Profile Components/HeaderContainer";
 import { RoundedTextField } from "../../widgets/TextField/RoundedTextField";
+import { useSelector } from "react-redux";
+import Status from "../../../constants/status-constants";
+import { LoadingComponent } from "../../LoadingComponent";
 
 export function ProfileContainer(props) {
   const dispatch = useDispatch();
-  const { userInfo } = props;
+  const userInfo = useSelector((state) => state.user.userInform.user);
+  const status = useSelector((state) => state.user.userInform.status.status);
+  const isLoading = status === Status.LOADING_STATUS;
 
   const [changePasswordInfo, setChangePassword] = useState({});
   const [changeNameInfo, setChangeName] = useState({
@@ -111,6 +116,7 @@ export function ProfileContainer(props) {
           </Box>
         </Grid>
       )}
+      <LoadingComponent isLoading={isLoading} />
     </Box>
   );
 }
