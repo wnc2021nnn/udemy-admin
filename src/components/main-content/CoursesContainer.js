@@ -69,7 +69,7 @@ export function CoursesContainer(props) {
   // Teachers
   const teachers = useSelector((state) => state.user.teachers.users);
 
-  const [currentTeacher, setCurrentTeacher] = useState(teachers[0]);
+  const [currentTeacher, setCurrentTeacher] = useState(null);
 
   // Status
   const status = useSelector(
@@ -139,8 +139,11 @@ export function CoursesContainer(props) {
               filterCourseByTeacher(teacher);
               setCurrentTeacher(teacher);
             }}
-            getOptionLabel={(option) =>
-              option.first_name + " " + option.last_name
+            getOptionLabel={(option) =>{
+              if (option === null) return "";
+              return option.first_name + " " + option.last_name;
+            }
+              
             }
             style={{ width: 300 }}
             renderInput={(params) => (
