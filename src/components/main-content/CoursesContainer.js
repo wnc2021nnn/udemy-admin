@@ -274,13 +274,17 @@ const EnhancedTableToolbar = (props) => {
     <Toolbar>
       <Tooltip>
         {isDisableMode ? (
-          <IconButton onClick={onDisable}>
-            <ToggleOn />
-          </IconButton>
+          <Tooltip title="Disable Course">
+            <IconButton onClick={onDisable}>
+              <ToggleOn />
+            </IconButton>
+          </Tooltip>
         ) : (
-          <IconButton onClick={onEnable}>
-            <ToggleOff />
-          </IconButton>
+          <Tooltip title="Enable Course">
+            <IconButton onClick={onEnable}>
+              <ToggleOff />
+            </IconButton>
+          </Tooltip>
         )}
       </Tooltip>
     </Toolbar>

@@ -58,7 +58,7 @@ export function LecturersContainer(props) {
   };
 
   const enableLecturers = (id) => {
-    dispatch(enableTeacherThunk(id))
+    dispatch(enableTeacherThunk(id));
   };
 
   const editHandler = (id) => {
@@ -78,7 +78,11 @@ export function LecturersContainer(props) {
         disableLecturers={disableLecturers}
         onEdit={editHandler}
       />
-      <UpdateTeacherFormDialog user={selectedUser} open={open} setOpen={setOpen}/>
+      <UpdateTeacherFormDialog
+        user={selectedUser}
+        open={open}
+        setOpen={setOpen}
+      />
       <LoadingComponent isLoading={isLoading} />
     </Box>
   );
@@ -177,24 +181,28 @@ const EnhancedTableToolbar = (props) => {
 
   const toolBar = (
     <Toolbar>
-      <Tooltip title="Edit">
-        <Box display="flex">
-          <Box>
+      <Box display="flex">
+        <Box>
+          <Tooltip title="Edit">
             <IconButton onClick={onEdit}>
               <Edit style={{ color: AppTheme.black }}></Edit>
             </IconButton>
-          </Box>
-          {isDisableMode ? (
+          </Tooltip>
+        </Box>
+        {isDisableMode ? (
+          <Tooltip title="Disable Lectures">
             <IconButton onClick={onDisable}>
               <ToggleOn />
             </IconButton>
-          ) : (
+          </Tooltip>
+        ) : (
+          <Tooltip title="Enable Lecturers">
             <IconButton onClick={onEnable}>
               <ToggleOff />
             </IconButton>
-          )}
-        </Box>
-      </Tooltip>
+          </Tooltip>
+        )}
+      </Box>
     </Toolbar>
   );
 
