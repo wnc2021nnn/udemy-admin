@@ -7,6 +7,7 @@ import { userLogin } from "../../store/slices/userSlice";
 import { verifyEmail } from "../../utils/auth/verify";
 import classes from "./Login.module.css";
 import Loader from "../widgets/Loader";
+import { Box } from "@material-ui/core";
 
 export default function Login(props) {
   const history = useHistory();
@@ -18,7 +19,6 @@ export default function Login(props) {
   });
   const dispatch = useDispatch();
   const userInform = useSelector((state) => state.user.userInform);
-
   const { from } = location.state || { from: { pathname: "/" } };
 
   const handleChangeInput = (event) => {
@@ -32,11 +32,6 @@ export default function Login(props) {
         [name]: value,
       };
     });
-  };
-
-  const registerClickHandler = (event) => {
-    event.preventDefault();
-    history.push("/register");
   };
 
   const loginClickHandler = (event) => {
@@ -58,30 +53,36 @@ export default function Login(props) {
 
       history.push(from.pathname);
     }
-  }, [userInform.status.status]);
+  },);
 
   return (
-    <div className={classes.wrapper}>
-      <h3 className={classes.title}>LOGIN</h3>
-      <form>
-        <input onChange={handleChangeInput} name="email" placeholder="Email" />
-        <input
-          type="password"
-          onChange={handleChangeInput}
-          name="password"
-          placeholder="Password"
-        />
-        <div className={classes.errorText}>{error}</div>
-        <button onClick={loginClickHandler}>
-          <Loader
-            isLoading={userInform.status.status === Status.LOADING_STATUS}
-            size={20}
-          >
-            Login
-          </Loader>
-        </button>
-      </form>
-      <a onClick={registerClickHandler}>Chưa có tài khoản? Đăng ký ngay!</a>
-    </div>
+    <Box mt={20}>
+      <div className={classes.wrapper}>
+        <h3 className={classes.title}>LOGIN</h3>
+        <form>
+          <input
+            onChange={handleChangeInput}
+            name="email"
+            placeholder="Email"
+          />
+          <input
+            type="password"
+            onChange={handleChangeInput}
+            name="password"
+            placeholder="Password"
+          />
+          <div className={classes.errorText}>{error}</div>
+          <button onClick={loginClickHandler}>
+            <Loader
+              isLoading={userInform.status.status === Status.LOADING_STATUS}
+              size={20}
+            >
+              Login
+            </Loader>
+          </button>
+        </form>
+      </div>
+
+    </Box>
   );
 }
