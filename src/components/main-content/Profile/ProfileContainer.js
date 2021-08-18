@@ -1,9 +1,7 @@
 import { Box, Grid, TextField, Button } from "@material-ui/core";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import {
-  updateUserThunk,
-} from "../../../store/slices/userSlice";
+import { updateUserThunk } from "../../../store/slices/userSlice";
 import { HeaderContainer } from "./Profile Components/HeaderContainer";
 import { RoundedTextField } from "../../widgets/TextField/RoundedTextField";
 import { useSelector } from "react-redux";
@@ -61,6 +59,7 @@ export function ProfileContainer(props) {
           name="first_name"
           onChange={handleChangeInputName}
           label="First Name"
+          defaultValue={userInfo?.first_name}
           value={changeNameInfo.first_name}
         />
 
@@ -68,6 +67,7 @@ export function ProfileContainer(props) {
           name="last_name"
           onChange={handleChangeInputName}
           label="Last Name"
+          defaultValue={userInfo?.last_name}
           value={changeNameInfo.last_name}
         />
         <ProfileField label="Email" value={userInfo?.email} disable={true} />
@@ -144,6 +144,7 @@ function ProfileField(props) {
         id="outlined-basic"
         value={props.value}
         variant="outlined"
+        defaultValue={props.defaultValue ?? ""}
         disabled={props.disable}
       />
     </Grid>

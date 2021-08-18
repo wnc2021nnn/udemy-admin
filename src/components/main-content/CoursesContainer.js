@@ -69,6 +69,8 @@ export function CoursesContainer(props) {
   // Teachers
   const teachers = useSelector((state) => state.user.teachers.users);
 
+  const [currentTeacher, setCurrentTeacher] = useState(teachers[0]);
+
   // Status
   const status = useSelector(
     (state) => state.courses.listCourses.status.status
@@ -97,11 +99,11 @@ export function CoursesContainer(props) {
     setTopicSelected(index);
   };
 
-  const filterCourseByTeacherId = (teacherId) => {
-    if (teacherId !== "") {
+  const filterCourseByTeacher = (teacher) => {
+    if (teacher !== null) {
       dispatch(
         fetchCourses({
-          teacher_id: teacherId,
+          teacher_id: teacher.user_id,
         })
       );
     } else {
@@ -131,20 +133,22 @@ export function CoursesContainer(props) {
         <Box flexGrow={1} display="flex" justifyContent="flex-end">
           <Autocomplete
             id="combo-box-demo"
+            value={currentTeacher}
             options={teachers}
-            getOptionLabel={(option) => option.user_id}
+            onChange={(event, teacher) => {
+              filterCourseByTeacher(teacher);
+              setCurrentTeacher(teacher);
+            }}
+            getOptionLabel={(option) =>
+              option.first_name + " " + option.last_name
+            }
             style={{ width: 300 }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Teacher ID"
+                label="Teacher"
                 variant="outlined"
                 size="small"
-                onKeyDown={(e) => {
-                  if (e.code === "Enter") {
-                    filterCourseByTeacherId(e.target.value);
-                  }
-                }}
               />
             )}
           />
